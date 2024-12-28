@@ -193,48 +193,61 @@ bool has_physical(Jerry jerry, char* physical) {
 }
 
 status delete_physical_from_jerry(Jerry *jerry, char *physical_name) {
-    // Check if the input physical_name is NULL
-    if (physical_name == NULL) {
-        return failure; // Return failure if the physical_name is invalid
+    if (!jerry || !physical_name) {
+        return failure;
     }
 
-    // Check if the input Jerry pointer is NULL
-    if (jerry == NULL) {
-        return failure; // Return failure if the Jerry pointer is invalid
-    }
-
-    // Check if the Jerry has the specified PhysicalCharacteristic
+    // אם אין תכונה כזו, נכשל
     if (!has_physical(*jerry, physical_name)) {
-        return failure; // Return failure if the PhysicalCharacteristic does not exist
+        return failure;
     }
 
-    int index = 0; // Variable to store the index of the PhysicalCharacteristic to be deleted
-
-    // Find the index of the specified PhysicalCharacteristic
+    int index = -1;
+    // מוצאים את האינדקס שבו נמצא ה-physical_name
     for (int i = 0; i < jerry->num_of_pyhshical; i++) {
         if (strcmp(jerry->his_physical[i]->name, physical_name) == 0) {
             index = i;
+            break;
         }
     }
 
-    // Shift all elements after the deleted PhysicalCharacteristic one position to the left
+    if (index == -1) {
+        return failure; // לא אמור לקרות, אבל ליתר ביטחון
+    }
+
+    // ראשית משחררים את האובייקט
+    destroyPhysicalCharacteristics(jerry->his_physical[index]);
+
+    // מעבירים את כל אלו שאחרי האיבר – מקום אחד אחורה
     for (int i = index; i < jerry->num_of_pyhshical - 1; i++) {
         jerry->his_physical[i] = jerry->his_physical[i + 1];
     }
 
-    // Decrease the count of Jerry's PhysicalCharacteristics
+    // מורידים את מספר התכונות ב-1
     jerry->num_of_pyhshical--;
 
-    // Reallocate memory for the updated array size
-    PhysicalCharacteristics** temp = realloc(jerry->his_physical, jerry->num_of_pyhshical * sizeof(PhysicalCharacteristics*));
+    // עכשיו, אם יש עדיין תכונות, נקצה מחדש
+    if (jerry->num_of_pyhshical > 0) {
+        PhysicalCharacteristics** temp = realloc(
+            jerry->his_physical,
+            jerry->num_of_pyhshical * sizeof(PhysicalCharacteristics*)
+        );
 
-    // Update the pointer only if reallocation succeeded or the array size is zero
-    if (temp != NULL || jerry->num_of_pyhshical == 0) {
-        jerry->his_physical = temp;
+        // אם הצליח, עדכן
+        if (temp != NULL) {
+            jerry->his_physical = temp;
+        }
+        // אם נכשל, אפשר או להחזיר failure, או להשאיר את המצב הקודם
+    } else {
+        // אם אין יותר מאפיינים, שחרר את המערך ושים אותו כ-NULL
+        free(jerry->his_physical);
+        jerry->his_physical = NULL;
     }
 
-    return success; // Return success if the deletion was completed successfully
+    return success;
 }
+
+
 
 
 status printJerry(Jerry *jerry) {

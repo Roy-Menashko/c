@@ -123,22 +123,17 @@ static status printJerryIDOnly(Element e)
     return success;
 }*/
 
-bool hasPlanetName(Element dataKey, Element element) {
-    if (dataKey == NULL || element == NULL) {
-        return false;
-    }
-
-    char* name = (char*)dataKey;
+bool hasPlanetName(Element element, Element dataKey) {
+    if (!element || !dataKey) return false;
     Planet* planet = (Planet*)element;
-
-    return strcmp(name, planet->name) == 0;
+    char* name = (char*)dataKey;
+    return strcmp(planet->name, name) == 0;
 }
 
 bool isJerryIDEqual(const Jerry* jerry, const char* id) {
     if (jerry == NULL || id == NULL) {
         return false;
     }
-    printf("DBG: jerry->ID='%s', id='%s'\n", jerry->ID, id);
     return strcmp(jerry->ID, id) == 0;
 }
 
@@ -550,7 +545,7 @@ int main(int argc, char* argv[]) {
                     printf("Error reading input.\n");
                     return 1;
                 }
-                name[strcspn(name, "\n")] = '\0';
+                name[strcspn(name, "\r\n")] = '\0';
                 Planet* planet = findPlanetByName(name);
                 if (!planet) {
                     printf("%s is not a known planet!\n", name);
@@ -658,6 +653,7 @@ int main(int argc, char* argv[]) {
                     if (j) {
                         delete_physical_from_jerry(j,characteristic);
                         deleteNode(l,j);
+                        printJerry(j);
                     } else {
                         printf("The information about his %s not available to the daycare!\n", characteristic);
                     }
