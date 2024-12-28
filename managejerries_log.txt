@@ -1,0 +1,71 @@
+Script started on 2024-12-14 20:57:42+02:00 [TERM="xterm-256color" TTY="/dev/pts/5" COLUMNS="148" LINES="19"]
+[?2004h]0;roy@DESKTOP-DJR7RMT: /mnt/c/Users/Avishur/CLionProjects/untitled[01;32mroy@DESKTOP-DJR7RMT[00m:[01;34m/mnt/c/Users/Avishur/CLionProjects/untitled[00m$ [7m./ManageJerries 3 4 configuration_file.txt[27m./ManageJerries 3 4 configuration_file.txt
+[?2004lAW JEEZ RICK, what do you want to do now ?
+1 : Print all Jerries
+2 : Print all Planets
+3 : Add physical characteristic to Jerry
+4 : Remove physical characteristic from Jerry
+5 : Print Jerries by a planet
+6 : Print Jerries by a physical characteristic
+7 : Go home
+1
+Jerry , ID - 23dF21 :
+Happiness level : 50
+Origin : C-137
+Planet : Earth (123.10,8392.00,99.20)
+Jerry's physical Characteristics available :
+	Height : 166.20 ,	LimbsNumber : 4.00 ,	Weight : 80.00
+Jerry , ID - 1q456 :
+Happiness level : 10
+Origin : C-455
+Planet : Earth (123.10,8392.00,99.20)
+Jerry , ID - S5d2 :
+Happiness level : 99
+Origin : V-234
+Planet : Gaia (983.22,8521.00,2312.00)
+Jerry's physical Characteristics available :
+	Age : 50.00
+Jerry , ID - 6e45 :
+Happiness level : 34
+Origin : B-344
+Planet : Pluto (3454.21,124.11,985.45)
+Jerry's physical Characteristics available :
+	LimbsNumber : 2.00
+AW JEEZ RICK, what do you want to do now ?
+1 : Print all Jerries
+2 : Print all Planets
+3 : Add physical characteristic to Jerry
+4 : Remove physical characteristic from Jerry
+5 : Print Jerries by a planet
+6 : Print Jerries by a physical characteristic
+7 : Go home
+2
+Planet : Earth (123.10,8392.00,99.20)
+Planet : Gaia (983.22,8521.00,2312.00)
+Planet : Pluto (3454.21,124.11,985.45)
+AW JEEZ RICK, what do you want to do now ?
+1 : Print all Jerries
+2 : Print all Planets
+3 : Add physical characteristic to Jerry
+4 : Remove physical characteristic from Jerry
+5 : Print Jerries by a planet
+6 : Print Jerries by a physical characteristic
+7 : Go home
+3
+What is your Jerry's ID ?
+notExist
+OH NO! I CAN'T FIND HIM RICK !
+AW JEEZ RICK, what do you want to do now ?
+1 : Print all Jerries
+2 : Print all Planets
+3 : Add physical characteristic to Jerry
+4 : Remove physical characteristic from Jerry
+5 : Print Jerries by a planet
+6 : Print Jerries by a physical characteristic
+7 : Go home
+7
+AW JEEZ RICK, ALL THE JERRIES GOT FREE !
+[?2004h]0;roy@DESKTOP-DJR7RMT: /mnt/c/Users/Avishur/CLionProjects/untitled[01;32mroy@DESKTOP-DJR7RMT[00m:[01;34m/mnt/c/Users/Avishur/CLionProjects/untitled[00m$ [?2004l
+exit
+
+Script done on 2024-12-14 21:00:45+02:00 [COMMAND_EXIT_CODE="0"]

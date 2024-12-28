@@ -1,0 +1,3 @@
+/mnt/c/Users/Avishur/CLionProjects/untitled/cmake-build-release-wsl/CMakeFiles/untitled.dir
+/mnt/c/Users/Avishur/CLionProjects/untitled/cmake-build-release-wsl/CMakeFiles/edit_cache.dir
+/mnt/c/Users/Avishur/CLionProjects/untitled/cmake-build-release-wsl/CMakeFiles/rebuild_cache.dir
