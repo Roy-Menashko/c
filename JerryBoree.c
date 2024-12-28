@@ -662,7 +662,40 @@ int main(int argc, char* argv[]) {
 
 
         } else if (strcmp(input, "4") == 0) {
-            printf("Returning your Jerry to you...\n");
+            char id[301];
+            printf("What is your Jerry's ID?\n");
+
+            if (fgets(id, sizeof(id), stdin) == NULL) {
+                printf("Error reading input.\n");
+                return 1;
+            }
+            id[strcspn(id, "\n")] = '\0';
+
+            Jerry *j = lookupInHashTable(g_jerriesHash, id);
+            if(!j) {
+                printf("Rick, this Jerry is not in the daycare!\n");
+            }
+            else {
+                // הסרת הג'רי מטבלת הג'רים לפי ID
+                removeFromHashTable(g_jerriesHash, id);
+
+                // הסרת הג'רי מכל הרשימות הפיזיות שלו
+                for(int i = 0; i < j->num_of_pyhshical; i++) {
+                    char* physName = j->his_physical[i]->name;
+                    LinkedList l = lookupInHashTableProMax(g_physicalHash, physName);
+                    if(l) {
+                        deleteNode(l, j);
+                    }
+                }
+
+                // הסרת הג'רי מהרשימה הראשית (זה יקרא ל־destroyJerry)
+                if(deleteNode(g_jerriesList, j) == failure) {
+                    printf("Failed to remove Jerry from the list.\n");
+                }
+
+                // אין צורך לקרוא שוב ל־destroyJerry(j), מכיוון ש־deleteNode כבר עושה זאת
+            }
+            printf("Rick, thank you for using our daycare service! Your Jerry awaits!\n");
         } else if (strcmp(input, "5") == 0) {
             printf("Finding a similar Jerry for you...\n");
         } else if (strcmp(input, "6") == 0) {
