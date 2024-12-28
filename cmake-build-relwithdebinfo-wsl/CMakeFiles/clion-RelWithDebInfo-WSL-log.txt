@@ -1,4 +1,4 @@
 /usr/bin/cmake -DCMAKE_BUILD_TYPE=RelWithDebInfo -G "Unix Makefiles" -S /mnt/c/Users/Avishur/CLionProjects/untitled -B /mnt/c/Users/Avishur/CLionProjects/untitled/cmake-build-relwithdebinfo-wsl
--- Configuring done (0.1s)
--- Generating done (0.2s)
+-- Configuring done (0.2s)
+-- Generating done (0.5s)
 -- Build files have been written to: /mnt/c/Users/Avishur/CLionProjects/untitled/cmake-build-relwithdebinfo-wsl

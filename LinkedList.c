@@ -154,7 +154,7 @@ Element searchByKeyInList(LinkedList list, Element dataKey, bool (*has_data)(Ele
 
     node current = list->head;
     while (current != NULL) {
-        if (has_data(dataKey, current->element)) {
+        if (has_data(current->element, dataKey)) {
             return current->element;
         }
         current = current->next;

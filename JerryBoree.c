@@ -195,15 +195,15 @@ static status printJerryPtr(Element e)
     return success;
 }
 
-/* הדפסת רשימת Jerry-ים (נדרש עבור ה-value ב-HashTableProMax) */
+/* הדפסת רשימת Jerry-ים (נדרש עבור ה-value ב-HashTableProMax)
 static status printListOfJerries(Element e)
 {
     if (!e) return failure;
-    /* כאן אנחנו מניחים ש-e הוא LinkedList של Jerry*,
-       ולכן קוראים לפונקציית displayList מה-LinkedList. */
+     כאן אנחנו מניחים ש-e הוא LinkedList של Jerry*,
+       ולכן קוראים לפונקציית displayList מה-LinkedList.
     displayList((LinkedList)e);
     return success;
-}
+}*/
 
 bool isPrime(int n) {
     if (n <= 1) {
@@ -448,7 +448,7 @@ status readConfigAndBuild(const char* fileName)
         printStringPtr, /* printKey  */
         copyShallow,    /* copyValue (שומר LinkedList) */
         freeNoOp,       /* freeValue (לא נשמיד, כי הג'רי עצמו מנוהל בחוץ) */
-        printListOfJerries, /* printValue = מציג את הרשימה */
+        printJerryWrapper, /* printValue = מציג את הרשימה */
         compareStrings, /* השוואת מפתח (string) */
         compareStrings, /* השוואת ערכים (לא באמת בשימוש כאן) */
         transformStringToNumber,
@@ -603,8 +603,7 @@ int main(int argc, char* argv[]) {
                 }
                 characteristic[strcspn(characteristic, "\n")] = '\0';
                 LinkedList l = lookupInHashTableProMax(g_physicalHash,characteristic);
-                displayList(l);
-                Jerry* j = (Jerry*)searchByKeyInList(l, id, isJerryIDEqualWrapper);
+                Jerry* j = searchByKeyInList(l, id, isJerryIDEqualWrapper);
                 if (j) {
                     printf("The information about his %s already available to the daycare!\n", characteristic);
                 } else {
@@ -625,14 +624,47 @@ int main(int argc, char* argv[]) {
                     j = lookupInHashTable(g_jerriesHash,id);
                     add_physical_to_jerry(j,physical);
                     addToHashTableProMax(g_physicalHash,characteristic,j);
-                    displayList(l);
+                    displayList(lookupInHashTableProMax(g_physicalHash,characteristic));
                 }
 
             }
 
 
         } else if (strcmp(input, "3") == 0) {
-            printf("Oh wait, that can't be right...\n");
+            char id[301];
+            printf("What is your Jerry's ID ?\n");
+
+            if (fgets(id, sizeof(id), stdin) == NULL) {
+                printf("Error reading input.\n");
+                return 1;
+            }
+            id[strcspn(id, "\n")] = '\0';
+            if(!lookupInHashTable(g_jerriesHash,id)) {
+                printf("Rick this Jerry is not in the daycare !\n");
+            } else {
+                char characteristic[301];
+                printf("What physical characteristic do you want to remove from Jerry - %s?\n", id);
+                if (fgets(characteristic, sizeof(characteristic), stdin) == NULL) {
+                    printf("Error reading input.\n");
+                    return 1;
+                }
+                characteristic[strcspn(characteristic, "\n")] = '\0';
+                LinkedList l = lookupInHashTableProMax(g_physicalHash,characteristic);
+                if (!l) {
+                    printf("Rick this Jerry is not in the daycare !\n");
+                }
+                else {
+                    Jerry* j = searchByKeyInList(l, id, isJerryIDEqualWrapper);
+                    if (j) {
+                        delete_physical_from_jerry(j,characteristic);
+                        deleteNode(l,j);
+                    } else {
+                        printf("The information about his %s not available to the daycare!\n", characteristic);
+                    }
+                }
+            }
+
+
         } else if (strcmp(input, "4") == 0) {
             printf("Returning your Jerry to you...\n");
         } else if (strcmp(input, "5") == 0) {
@@ -648,8 +680,7 @@ int main(int argc, char* argv[]) {
             destroyAll();
             done = true;
         } else {
-            printf("Invalid option. Please try again.\n");
+            printf("Invalid option\n");
         }
     }
 }
- 
