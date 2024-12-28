@@ -183,3 +183,10 @@ Element getNextElement(LinkedList list, Element currentElement) {
     }
     return NULL;
 }
+
+Element get_data(node node) {
+    if (!node) {
+        return NULL;
+    }
+    return node->element;
+}

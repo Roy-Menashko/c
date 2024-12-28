@@ -332,4 +332,6 @@ bool compare_planets(Planet* planet,char* name);
 
 bool compare_jerry(Jerry* jerry,char* id);
 
+float get_value(Jerry* jerry,char* physical);
+
 #endif // JERRY_H

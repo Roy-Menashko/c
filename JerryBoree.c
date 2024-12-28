@@ -13,6 +13,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <stdbool.h>
+#include <math.h>
 
 #include "Defs.h"
 #include "Jerry.h"               /* עבור פונקציות יצירה/הרס של Jerry, Planet וכו' */
@@ -122,6 +123,34 @@ static status printJerryIDOnly(Element e)
     printf("JerryID=%s", j->ID);
     return success;
 }*/
+
+float get_abs(float x,float y) {
+    if (x > y){
+        return x-y;
+    }
+    return y - x;
+}
+
+Jerry* min_abs(LinkedList l,char* physical,float value) {
+    if (!l) return NULL;
+    node current = getFirstElement(l);
+    float min = INFINITY;
+    Jerry* chosen = NULL;
+    while (current) {
+        if (get_data(current)) {
+            Jerry* j = (Jerry*)current;
+            if (has_physical(*j, (char*)physical)){
+                float jerry_val = get_value(j,physical);
+                if (get_abs(jerry_val,value) < min) {
+                    min = get_abs(jerry_val,value);
+                    chosen = j;
+                }
+            }
+        }
+        current = getNextElement(l,current);
+    }
+    return chosen;
+}
 
 bool hasPlanetName(Element element, Element dataKey) {
     if (!element || !dataKey) return false;
@@ -697,7 +726,47 @@ int main(int argc, char* argv[]) {
             }
             printf("Rick, thank you for using our daycare service! Your Jerry awaits!\n");
         } else if (strcmp(input, "5") == 0) {
-            printf("Finding a similar Jerry for you...\n");
+            char characteristic[301];
+            printf("What do you remember about your Jerry ?\n");
+            if (fgets(characteristic, sizeof(characteristic), stdin) == NULL) {
+                printf("Error reading input.\n");
+                return 1;
+            }
+            characteristic[strcspn(characteristic, "\n")] = '\0';
+            LinkedList l = lookupInHashTableProMax(g_physicalHash,characteristic);
+            if (!l) {
+                printf("Rick this Jerry is not in the daycare !\n");
+            } else {
+                float value;
+                printf("What do you remember about the value of his %s?\n", characteristic);
+                scanf("%f", &value);
+                clearInputBuffer();
+                Jerry *j = min_abs(l,characteristic, value);
+                if(j) {
+                    printJerry(j);
+                    removeFromHashTable(g_jerriesHash, j->ID);
+
+                    // הסרת הג'רי מכל הרשימות הפיזיות שלו
+                    for(int i = 0; i < j->num_of_pyhshical; i++) {
+                        char* physName = j->his_physical[i]->name;
+                        LinkedList linked_list = lookupInHashTableProMax(g_physicalHash, physName);
+                        if(linked_list) {
+                            deleteNode(linked_list, j);
+                        }
+                    }
+                    if(deleteNode(g_jerriesList, j) == failure) {
+                        printf("Failed to remove Jerry from the list.\n");
+                        return 1;
+                    }
+                    printf("Rick, thank you for using our daycare service! Your Jerry awaits!\n");
+                } else {
+                    return 1;
+                }
+            }
+
+
+
+
         } else if (strcmp(input, "6") == 0) {
             printf("Giving you the saddest Jerry...\n");
         } else if (strcmp(input, "7") == 0) {

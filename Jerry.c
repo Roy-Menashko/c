@@ -409,3 +409,16 @@ bool compare_jerry(Jerry* jerry,char* id) {
 
 }
 
+float get_value(Jerry* jerry,char* physical) {
+    if (jerry == NULL || jerry->ID == NULL || physical == NULL) {
+        return failure;
+    }
+    for (int i = 0; i < jerry->num_of_pyhshical; i++) {
+        if (strcmp(jerry->his_physical[i]->name, physical) == 0) {
+            return jerry->his_physical[i]->value;
+        }
+    }
+    return failure;
+
+}
+

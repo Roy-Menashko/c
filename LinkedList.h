@@ -34,4 +34,5 @@ Element getFirstElement(LinkedList list);
 
 Element getNextElement(LinkedList list, Element currentElement);
 
+Element get_data(node node);
 #endif //LINKEDLIST_H
