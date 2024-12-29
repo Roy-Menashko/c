@@ -174,6 +174,13 @@ Jerry* min_abs(LinkedList l,char* physical,float value) {
     return chosen;
 }
 
+int max(int a,int b) {
+    return a>b?a:b;
+}
+int min(int a,int b) {
+    return a<b?a:b;
+}
+
 bool hasPlanetName(Element element, Element dataKey) {
     if (!element || !dataKey) return false;
     Planet* planet = (Planet*)element;
@@ -820,10 +827,10 @@ int main(int argc, char* argv[]) {
             char userInput[301]; // משתנה לאחסון הקלט (300 תווים + '\0')
 
             // הדפסת ההודעה
-            printf("What information do you want to know?\n");
-            printf("1: All Jerries\n");
-            printf("2: All Jerries by physical characteristics\n");
-            printf("3: All known planets\n");
+            printf("What information do you want to know ?\n");
+            printf("1 : All Jerries\n");
+            printf("2 : All Jerries by physical characteristics\n");
+            printf("3 : All known planets\n");
 
 
             if (fgets(userInput, sizeof(userInput), stdin) == NULL) {
@@ -862,7 +869,83 @@ int main(int argc, char* argv[]) {
 
 
         } else if (strcmp(input, "8") == 0) {
-            printf("Letting the Jerries play...\n");
+            char userInput[301]; // משתנה לאחסון הקלט (300 תווים + '\0')
+
+            // הדפסת ההודעה
+            printf("What activity do you want the Jerries to partake in ?\n");
+            printf("1 : Interact with fake Beth\n");
+            printf("2 : Play golf\n");
+            printf("3 : Adjust the picture settings on the TV\n");
+
+
+            if (fgets(userInput, sizeof(userInput), stdin) == NULL) {
+                printf("Error reading input.\n");
+                return 1;
+            }
+
+            // הסרת תו ה-'\n' במידת הצורך
+            userInput[strcspn(userInput, "\n")] = '\0';
+            if (strcmp(userInput, "1") == 0) {
+                if (getLength(g_jerriesList)==0) {
+                    printf("Rick, we cannot help you - we currently have no Jerries in the daycare !\n");
+                }
+                else {
+                    Jerry* current = getFirstElement(g_jerriesList);
+                    while (current) {
+                        Jerry* j = current;
+                        if (j) {
+                            if (j->happines<20) {
+                                j->happines = max(j->happines-5,0);
+                            } else {
+                                j->happines = min(j->happines+15,100);
+                            }
+                        }
+                        current = getNextElement(g_jerriesList, current);
+                    }
+                    printf("The activity is now over !\n");
+                    displayList(g_jerriesList);
+                }
+            } else if (strcmp(userInput, "2") == 0) {
+                if (getLength(g_jerriesList)==0) {
+                    printf("Rick, we cannot help you - we currently have no Jerries in the daycare !\n");
+                } else {
+                    Jerry* current = getFirstElement(g_jerriesList);
+                    while (current) {
+                        Jerry* j = current;
+                        if (j) {
+                            if (j->happines<50) {
+                                j->happines = max(j->happines-10,0);
+                            } else {
+                                j->happines = min(j->happines+10,100);
+                            }
+                        }
+                        current = getNextElement(g_jerriesList, current);
+                    }
+                    printf("The activity is now over !\n");
+                    displayList(g_jerriesList);
+                }
+            }
+            else if (strcmp(userInput, "3") == 0) {
+                if (getLength(g_jerriesList)==0) {
+                    printf("Rick, we cannot help you - we currently have no Jerries in the daycare !\n");
+                } else {
+                    Jerry* current = getFirstElement(g_jerriesList);
+                    while (current) {
+                        Jerry* j = current;
+                        if (j) {
+                            j->happines = min(j->happines+20,100);
+                        }
+                        current = getNextElement(g_jerriesList, current);
+                    }
+                    printf("The activity is now over !\n");
+                    displayList(g_jerriesList);
+                }
+            } else {
+                printf("Rick this option is not known to the daycare !\n");
+            }
+
+
+
         } else if (strcmp(input, "9") == 0) {
             printf("Closing this place. Goodbye!\n");
             destroyAll();
