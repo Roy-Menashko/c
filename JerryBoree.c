@@ -100,6 +100,22 @@ static status freeStringPtr(Element e)
     return success;
 }*/
 
+/*void printAllJerries() {
+    if (g_jerriesList == NULL || getLength(g_jerriesList) == 0) {
+        printf("Rick we can not help you - we currently have no Jerries in the daycare !\n");
+        return;
+    }
+
+    Jerry* current = getFirstElement(g_jerriesList);
+    while (current) {
+        Jerry* j = current;
+        if (j) {
+            printJerry(j);
+        }
+        current = getNextElement(g_jerriesList, current);
+    }
+}*/
+
 /* פונקציית הדפסה למחרוזת */
 static status printStringPtr(Element e)
 {
@@ -776,13 +792,75 @@ int main(int argc, char* argv[]) {
                 }
             }
 
-
-
-
         } else if (strcmp(input, "6") == 0) {
-            printf("Giving you the saddest Jerry...\n");
+            int saddest = 101;
+            if (!getFirstElement(g_jerriesList)) {
+                printf("Rick, we cannot help you - we currently have no Jerries in the daycare!\n");
+            }
+            else {
+                Jerry* current = getFirstElement(g_jerriesList);
+                Jerry* j = current;
+                while (current) {
+                    if (current->happines<saddest) {
+                        j = current;
+                        saddest = current->happines;
+                    }
+                    current = getNextElement(g_jerriesList, current);
+                }
+                if(j) {
+                    printJerry(j);
+                    delete_jerry(j);
+                    printf("Rick, thank you for using our daycare service! Your Jerry awaits!\n");
+                } else {
+                    return 1;
+                }
+
+            }
         } else if (strcmp(input, "7") == 0) {
-            printf("Showing you what we've got...\n");
+            char userInput[301]; // משתנה לאחסון הקלט (300 תווים + '\0')
+
+            // הדפסת ההודעה
+            printf("What information do you want to know?\n");
+            printf("1: All Jerries\n");
+            printf("2: All Jerries by physical characteristics\n");
+            printf("3: All known planets\n");
+
+
+            if (fgets(userInput, sizeof(userInput), stdin) == NULL) {
+                printf("Error reading input.\n");
+                return 1;
+            }
+
+            // הסרת תו ה-'\n' במידת הצורך
+            userInput[strcspn(userInput, "\n")] = '\0';
+            if (strcmp(userInput, "1") == 0) {
+                displayList(g_jerriesList);
+            }
+            else if (strcmp(userInput, "2") == 0) {
+                char characteristic[301];
+                printf("What physical characteristics ?\n");
+                if (fgets(characteristic, sizeof(characteristic), stdin) == NULL) {
+                    printf("Error reading input.\n");
+                    return 1;
+                }
+                characteristic[strcspn(characteristic, "\n")] = '\0';
+                if (!lookupInHashTableProMax(g_physicalHash, characteristic)) {
+                    printf("Rick, we cannot help you - we do not know any Jerry's %s!\n", characteristic);
+                } else {
+                    displayHashTableProMaxElementsByKey(g_physicalHash, characteristic);
+                }
+            }
+            else if (strcmp(userInput, "3") == 0) {
+                displayList(g_planetsList);
+            }
+            else {
+                printf("Rick this option is not known to the daycare !\n");
+            }
+
+
+
+
+
         } else if (strcmp(input, "8") == 0) {
             printf("Letting the Jerries play...\n");
         } else if (strcmp(input, "9") == 0) {

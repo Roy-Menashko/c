@@ -123,7 +123,6 @@ status displayList(LinkedList list) {
         list->print_func(current->element);
         current = current->next;
     }
-    printf("\n");
     return success;
 }
 
