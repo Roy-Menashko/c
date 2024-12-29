@@ -70,6 +70,12 @@ static int transformStringToNumber(Element key)
     return sum;
 }
 
+static Element copyString(Element e) {
+    if (!e) return NULL;
+    char* copy = strdup((char*)e);
+    return copy;
+}
+
 /* השוואת Planets לפי שם */
 static bool comparePlanets(Element e1, Element e2)
 {
@@ -228,6 +234,11 @@ static status printListOfJerries(Element e)
     displayList((LinkedList)e);
     return success;
 }*/
+static status freeStringPtr(Element e) {
+    if (!e) return failure;
+    free(e);
+    return success;
+}
 
 bool isPrime(int n) {
     if (n <= 1) {
@@ -259,6 +270,35 @@ int nextPrime(int n) {
         n++;
     }
     return n;
+}
+
+status delete_jerry(Jerry* j) {
+    if (!j) {
+        return failure;
+    }
+
+    // הסרת הג'רי מטבלת הג'רים לפי ID
+    if (removeFromHashTable(g_jerriesHash, j->ID) == failure) {
+        printf("Failed to remove Jerry with ID %s from g_jerriesHash.\n", j->ID);
+        // ניתן להחליט להמשיך או להחזיר כשלון
+    }
+
+    // הסרת הג'רי מכל הרשימות הפיזיות שלו
+    for (int i = 0; i < j->num_of_pyhshical; i++) {
+        char* physName = j->his_physical[i]->name;
+        if (removeFromHashTableProMax(g_physicalHash, physName, j) == failure) {
+            printf("Failed to remove Jerry with ID %s from physical characteristic '%s'.\n", j->ID, physName);
+            // ניתן להחליט להמשיך או להחזיר כשלון
+        }
+    }
+
+    // הסרת הג'רי מהרשימה הראשית
+    if (deleteNode(g_jerriesList, j) == failure) {
+        printf("Failed to remove Jerry with ID %s from g_jerriesList.\n", j->ID);
+        return failure;
+    }
+
+    return success;
 }
 
 void destroyAll()
@@ -445,8 +485,8 @@ status readConfigAndBuild(const char* fileName)
     /* לדוגמה נקבע גודל קבוע או דינאמי. כאן ניקח סתם גודל 31. */
     int l = getLength(g_jerriesList);
     g_jerriesHash = createHashTable(
-        copyShallow,       /* העתקת המפתח (string) – העתקה שטחית */
-        freeNoOp,     /* השמדת מפתח (string) */
+        copyString,       /* העתקת המפתח (string) – העתקה שטחית */
+        freeStringPtr,     /* השמדת מפתח (string) */
         printStringPtr,    /* הדפסת מפתח (string) */
         copyShallow,       /* העתקה שטחית ל-Jerry* */
         freeNoOp,          /* לא משמידים את Jerry* (כבר ינוהל ע"י הרשימה) */
@@ -467,8 +507,8 @@ status readConfigAndBuild(const char* fileName)
 
     /* טבלת מאפיינים פיזיים (מפתח: שם פיזי, ערך: רשימת ג'רים) */
     g_physicalHash = createHashTableProMax(
-        copyShallow,    /* copyKey   */
-        freeNoOp,  /* freeKey   */
+        copyString,    /* copyKey   */
+        freeStringPtr,  /* freeKey   */
         printStringPtr, /* printKey  */
         copyShallow,    /* copyValue (שומר LinkedList) */
         freeNoOp,       /* freeValue (לא נשמיד, כי הג'רי עצמו מנוהל בחוץ) */
@@ -705,26 +745,11 @@ int main(int argc, char* argv[]) {
                 printf("Rick, this Jerry is not in the daycare!\n");
             }
             else {
-                // הסרת הג'רי מטבלת הג'רים לפי ID
-                removeFromHashTable(g_jerriesHash, id);
-
-                // הסרת הג'רי מכל הרשימות הפיזיות שלו
-                for(int i = 0; i < j->num_of_pyhshical; i++) {
-                    char* physName = j->his_physical[i]->name;
-                    LinkedList l = lookupInHashTableProMax(g_physicalHash, physName);
-                    if(l) {
-                        deleteNode(l, j);
-                    }
-                }
-
-                // הסרת הג'רי מהרשימה הראשית (זה יקרא ל־destroyJerry)
-                if(deleteNode(g_jerriesList, j) == failure) {
-                    printf("Failed to remove Jerry from the list.\n");
-                }
-
-                // אין צורך לקרוא שוב ל־destroyJerry(j), מכיוון ש־deleteNode כבר עושה זאת
+                printJerry(j);
+                delete_jerry(j);
+                printf("Rick, thank you for using our daycare service! Your Jerry awaits!\n");
             }
-            printf("Rick, thank you for using our daycare service! Your Jerry awaits!\n");
+
         } else if (strcmp(input, "5") == 0) {
             char characteristic[301];
             printf("What do you remember about your Jerry ?\n");
@@ -744,20 +769,7 @@ int main(int argc, char* argv[]) {
                 Jerry *j = min_abs(l,characteristic, value);
                 if(j) {
                     printJerry(j);
-                    removeFromHashTable(g_jerriesHash, j->ID);
-
-                    // הסרת הג'רי מכל הרשימות הפיזיות שלו
-                    for(int i = 0; i < j->num_of_pyhshical; i++) {
-                        char* physName = j->his_physical[i]->name;
-                        LinkedList linked_list = lookupInHashTableProMax(g_physicalHash, physName);
-                        if(linked_list) {
-                            deleteNode(linked_list, j);
-                        }
-                    }
-                    if(deleteNode(g_jerriesList, j) == failure) {
-                        printf("Failed to remove Jerry from the list.\n");
-                        return 1;
-                    }
+                    delete_jerry(j);
                     printf("Rick, thank you for using our daycare service! Your Jerry awaits!\n");
                 } else {
                     return 1;
