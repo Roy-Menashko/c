@@ -162,14 +162,14 @@ status displayList(LinkedList list) {
 
 Element getDataByIndex(LinkedList list, int index) {
     // Validate the list and the index
-    if (list == NULL || index < 0 || index >= list->size) {
+    if (list == NULL || index < 1 || index >= list->size) {
         return NULL; // Return NULL if the list is not initialized or the index is out of bounds
     }
 
     node current = list->head; // Start at the head of the list
 
     // Traverse the list to the specified index
-    for (int i = 0; i < index; i++) {
+    for (int i = 1; i < index; i++) {
         current = current->next; // Move to the next node
     }
 

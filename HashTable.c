@@ -19,8 +19,10 @@ struct hashTable_s {
 };
 
 static status freeKeyValuePairWrapper(Element e) {
+    if(!e) return failure;
     // Cast the generic Element to a KeyValuePair and call destroyKeyValuePair
-    return destroyKeyValuePair((KeyValuePair)e);
+    destroyKeyValuePair((KeyValuePair)e);
+    return success;
 }
 
 static bool compareKeyValuePairWrapper(Element e1, Element e2) {
@@ -36,9 +38,11 @@ static bool compareKeyValuePairWrapper(Element e1, Element e2) {
 
 
 static status printKeyValuePairWrapper(Element e) {
+    if(!e) return failure;
     // Cast the generic Element to a KeyValuePair
     // Call displayKeyValue to print both the key and value of the pair
-    return displayKeyValue((KeyValuePair)e);
+    displayKeyValue((KeyValuePair)e);
+    return success;
 }
 
 
@@ -87,6 +91,11 @@ hashTable createHashTable(CopyFunction copyKey, FreeFunction freeKey, PrintFunct
     }
 
     return newTable; // Return the newly created hash table
+}
+
+int findIndex(hashTable table, Element key) {
+    int hash = table->transformIntoNumber(key);
+    return hash % table->size;
 }
 
 
@@ -151,7 +160,7 @@ status addToHashTable(hashTable table, Element key, Element value) {
     }
 
     /* Calculate the hash index for the key */
-    int hash = table->transformIntoNumber(keyCopy) % table->size;
+    int hash = findIndex(table, key);
     /* The hash index determines the bucket where the KeyValuePair will be stored */
 
     /* Add the KeyValuePair to the appropriate bucket (linked list) */
@@ -170,7 +179,7 @@ Element lookupInHashTable(hashTable table, Element key) {
     }
 
     // Calculate the hash index for the key
-    int hash = (table->transformIntoNumber(key) + table->size) % table->size;
+    int hash = findIndex(table, key);
     // Ensure the hash value is within the valid range using modulo operation
 
     // Get the linked list (bucket) at the computed hash index
@@ -206,7 +215,7 @@ status removeFromHashTable(hashTable table, Element key) {
     }
 
     // Calculate the hash index for the key
-    int hash = (table->transformIntoNumber(key) + table->size) % table->size;
+    int hash = findIndex(table, key);
     // Ensure the hash value is within the valid range using modulo operation
 
     // Get the linked list (bucket) at the computed hash index
