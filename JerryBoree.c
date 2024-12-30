@@ -589,7 +589,7 @@ void runTest(const char* configFile)
 
 }
 void printMenu() {
-    printf("Welcome Rick, what are your Jerry's needs todayyyyy?\n");
+    printf("Welcome Rick, what are your Jerry's needs today ?\n");
     printf("1 : Take this Jerry away from me\n");
     printf("2 : I think I remember something about my Jerry\n");
     printf("3 : Oh wait. That can't be right\n");
@@ -640,11 +640,11 @@ int main(int argc, char* argv[]) {
                 name[strcspn(name, "\r\n")] = '\0';
                 Planet* planet = findPlanetByName(name);
                 if (!planet) {
-                    printf("%s is not a known planet!\n", name);
+                    printf("%s is not a known planet !\n", name);
                 }
                 else {
                     char dimension[301]; // מאגר לאחסון המימד (מקסימום 300 תווים + תו סיום)
-                    printf("What is your Jerry's dimension?\n");
+                    printf("What is your Jerry's dimension ?\n");
                     fgets(dimension, sizeof(dimension), stdin);
                     dimension[strcspn(dimension, "\n")] = '\0';
                     Origin* origin = createOrigin(planet,dimension);
@@ -655,7 +655,7 @@ int main(int argc, char* argv[]) {
                     int happiness; // משתנה לאחסון רמת האושר
 
                     // הדפסת ההודעה
-                    printf("How happy is your Jerry now?\n");
+                    printf("How happy is your Jerry now ?\n");
                     scanf("%d", &happiness);
                     clearInputBuffer();
                     Jerry* j = createJerry(id,happiness,origin);
@@ -683,7 +683,7 @@ int main(int argc, char* argv[]) {
             } else {
                 char characteristic[301];
 
-                printf("What physical characteristic can you add to Jerry - %s?\n", id);
+                printf("What physical characteristic can you add to Jerry - %s ?\n", id);
                 if (fgets(characteristic, sizeof(characteristic), stdin) == NULL) {
                     printf("Error reading input.\n");
                     return 1;
@@ -692,15 +692,14 @@ int main(int argc, char* argv[]) {
                 LinkedList l = lookupInHashTableProMax(g_physicalHash,characteristic);
                 Jerry* j = searchByKeyInList(l, id, isJerryIDEqualWrapper);
                 if (j) {
-                    printf("The information about his %s already available to the daycare!\n", characteristic);
+                    printf("The information about his %s already available to the daycare !\n", characteristic);
                 } else {
                     float value; // המשתנה לקליטת הערך
 
                     // הדפסת ההודעה עם השם של ה-info
-                    printf("What is the value of his %s?\n", characteristic);
+                    printf("What is the value of his %s ?\n", characteristic);
 
                     // קריאה לקלט מהמשתמש
-                    printf("Enter the value: ");
                     scanf("%f", &value);
                     clearInputBuffer();
                     PhysicalCharacteristics* physical = createPhysicalCharacteristics(characteristic,value);
@@ -711,7 +710,7 @@ int main(int argc, char* argv[]) {
                     j = lookupInHashTable(g_jerriesHash,id);
                     add_physical_to_jerry(j,physical);
                     addToHashTableProMax(g_physicalHash,characteristic,j);
-                    displayList(lookupInHashTableProMax(g_physicalHash,characteristic));
+                    displayHashTableProMaxElementsByKey(g_physicalHash,characteristic);
                 }
 
             }
@@ -730,7 +729,7 @@ int main(int argc, char* argv[]) {
                 printf("Rick this Jerry is not in the daycare !\n");
             } else {
                 char characteristic[301];
-                printf("What physical characteristic do you want to remove from Jerry - %s?\n", id);
+                printf("What physical characteristic do you want to remove from Jerry - %s ?\n", id);
                 if (fgets(characteristic, sizeof(characteristic), stdin) == NULL) {
                     printf("Error reading input.\n");
                     return 1;
@@ -747,7 +746,7 @@ int main(int argc, char* argv[]) {
                         deleteNode(l,j);
                         printJerry(j);
                     } else {
-                        printf("The information about his %s not available to the daycare!\n", characteristic);
+                        printf("The information about his %s not available to the daycare !\n", characteristic);
                     }
                 }
             }
@@ -755,7 +754,7 @@ int main(int argc, char* argv[]) {
 
         } else if (strcmp(input, "4") == 0) {
             char id[301];
-            printf("What is your Jerry's ID?\n");
+            printf("What is your Jerry's ID ?\n");
 
             if (fgets(id, sizeof(id), stdin) == NULL) {
                 printf("Error reading input.\n");
@@ -765,12 +764,11 @@ int main(int argc, char* argv[]) {
 
             Jerry *j = lookupInHashTable(g_jerriesHash, id);
             if(!j) {
-                printf("Rick, this Jerry is not in the daycare!\n");
+                printf("Rick, this Jerry is not in the daycare !\n");
             }
             else {
-                printJerry(j);
                 delete_jerry(j);
-                printf("Rick, thank you for using our daycare service! Your Jerry awaits!\n");
+                printf("Rick, thank you for using our daycare service ! Your Jerry awaits !\n");
             }
 
         } else if (strcmp(input, "5") == 0) {
@@ -783,17 +781,18 @@ int main(int argc, char* argv[]) {
             characteristic[strcspn(characteristic, "\n")] = '\0';
             LinkedList l = lookupInHashTableProMax(g_physicalHash,characteristic);
             if (!l) {
-                printf("Rick this Jerry is not in the daycare !\n");
+                printf("Rick we can not help you - we do not know any Jerry's %s !\n", characteristic);;
             } else {
                 float value;
-                printf("What do you remember about the value of his %s?\n", characteristic);
+                printf("What do you remember about the value of his %s ?\n", characteristic);
                 scanf("%f", &value);
                 clearInputBuffer();
                 Jerry *j = min_abs(l,characteristic, value);
                 if(j) {
+                    printf("Rick this is the most suitable Jerry we found :\n");
                     printJerry(j);
                     delete_jerry(j);
-                    printf("Rick, thank you for using our daycare service! Your Jerry awaits!\n");
+                    printf("Rick, thank you for using our daycare service! Your Jerry awaits !\n");
                 } else {
                     return 1;
                 }
@@ -802,7 +801,7 @@ int main(int argc, char* argv[]) {
         } else if (strcmp(input, "6") == 0) {
             int saddest = 101;
             if (!getFirstElement(g_jerriesList)) {
-                printf("Rick, we cannot help you - we currently have no Jerries in the daycare!\n");
+                printf("Rick, we cannot help you - we currently have no Jerries in the daycare !\n");
             }
             else {
                 Jerry* current = getFirstElement(g_jerriesList);
@@ -815,9 +814,10 @@ int main(int argc, char* argv[]) {
                     current = getNextElement(g_jerriesList, current);
                 }
                 if(j) {
+                    printf("Rick this is the most suitable Jerry we found :\n");
                     printJerry(j);
                     delete_jerry(j);
-                    printf("Rick, thank you for using our daycare service! Your Jerry awaits!\n");
+                    printf("Rick, thank you for using our daycare service! Your Jerry awaits !\n");
                 } else {
                     return 1;
                 }
@@ -852,7 +852,7 @@ int main(int argc, char* argv[]) {
                 }
                 characteristic[strcspn(characteristic, "\n")] = '\0';
                 if (!lookupInHashTableProMax(g_physicalHash, characteristic)) {
-                    printf("Rick, we cannot help you - we do not know any Jerry's %s!\n", characteristic);
+                    printf("Rick, we cannot help you - we do not know any Jerry's %s !\n", characteristic);
                 } else {
                     displayHashTableProMaxElementsByKey(g_physicalHash, characteristic);
                 }
@@ -947,11 +947,11 @@ int main(int argc, char* argv[]) {
 
 
         } else if (strcmp(input, "9") == 0) {
-            printf("Closing this place. Goodbye!\n");
+            printf("Closing this place. Goodbye !\n");
             destroyAll();
             done = true;
         } else {
-            printf("Invalid option\n");
+            printf("Rick this option is not known to the daycare !\n");
         }
     }
 }

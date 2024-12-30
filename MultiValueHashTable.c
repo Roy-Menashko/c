@@ -321,6 +321,7 @@ status displayHashTableProMaxElementsByKey(hashTableProMax table, Element key) {
         return failure; /* key not found */
     }
     table->print_key(key);
+    printf(" :\n");
     displayList(valList);
     return success;
 }
