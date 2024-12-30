@@ -3,8 +3,7 @@
 #define HASH_TABLE_H
 #include <stdbool.h>
 #include "Defs.h"
-#include "LinkedList.h"
-#include "KeyValuePair.h"
+
 
 typedef struct hashTable_s *hashTable;
 

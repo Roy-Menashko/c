@@ -2,6 +2,8 @@
 #include <stdlib.h>
 #include <string.h>
 #include "MultiValueHashTable.h"
+#include "LinkedList.h"
+#include "KeyValuePair.h"
 
 
 
