@@ -177,29 +177,29 @@ Jerry.c.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/untitled.dir/build.make CMakeFiles/untitled.dir/Jerry.c.s
 .PHONY : Jerry.c.s
 
-JerryBoree.o: JerryBoree.c.o
-.PHONY : JerryBoree.o
+JerryBoreeMain.o: JerryBoreeMain.c.o
+.PHONY : JerryBoreeMain.o
 
 # target to build an object file
-JerryBoree.c.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/untitled.dir/build.make CMakeFiles/untitled.dir/JerryBoree.c.o
-.PHONY : JerryBoree.c.o
+JerryBoreeMain.c.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/untitled.dir/build.make CMakeFiles/untitled.dir/JerryBoreeMain.c.o
+.PHONY : JerryBoreeMain.c.o
 
-JerryBoree.i: JerryBoree.c.i
-.PHONY : JerryBoree.i
+JerryBoreeMain.i: JerryBoreeMain.c.i
+.PHONY : JerryBoreeMain.i
 
 # target to preprocess a source file
-JerryBoree.c.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/untitled.dir/build.make CMakeFiles/untitled.dir/JerryBoree.c.i
-.PHONY : JerryBoree.c.i
+JerryBoreeMain.c.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/untitled.dir/build.make CMakeFiles/untitled.dir/JerryBoreeMain.c.i
+.PHONY : JerryBoreeMain.c.i
 
-JerryBoree.s: JerryBoree.c.s
-.PHONY : JerryBoree.s
+JerryBoreeMain.s: JerryBoreeMain.c.s
+.PHONY : JerryBoreeMain.s
 
 # target to generate assembly for a file
-JerryBoree.c.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/untitled.dir/build.make CMakeFiles/untitled.dir/JerryBoree.c.s
-.PHONY : JerryBoree.c.s
+JerryBoreeMain.c.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/untitled.dir/build.make CMakeFiles/untitled.dir/JerryBoreeMain.c.s
+.PHONY : JerryBoreeMain.c.s
 
 KeyValuePair.o: KeyValuePair.c.o
 .PHONY : KeyValuePair.o
@@ -312,9 +312,9 @@ help:
 	@echo "... Jerry.o"
 	@echo "... Jerry.i"
 	@echo "... Jerry.s"
-	@echo "... JerryBoree.o"
-	@echo "... JerryBoree.i"
-	@echo "... JerryBoree.s"
+	@echo "... JerryBoreeMain.o"
+	@echo "... JerryBoreeMain.i"
+	@echo "... JerryBoreeMain.s"
 	@echo "... KeyValuePair.o"
 	@echo "... KeyValuePair.i"
 	@echo "... KeyValuePair.s"

@@ -93,10 +93,28 @@ hashTable createHashTable(CopyFunction copyKey, FreeFunction freeKey, PrintFunct
     return newTable; // Return the newly created hash table
 }
 
+/*
+ * findIndex:
+ * Calculates the index (bucket) in the hash table for a given key.
+ * - Uses the provided transformIntoNumber function to hash the key into a numeric value.
+ * - Computes the bucket index by taking the modulus of the hash value with the table's size.
+ *
+ * Parameters:
+ * - table: Pointer to the hash table.
+ * - key: The key whose bucket index is to be found.
+ *
+ * Returns:
+ * - The index (bucket number) where the key should be located.
+ */
 int findIndex(hashTable table, Element key) {
+    // Use the transformIntoNumber function to compute a numeric hash value for the key.
     int hash = table->transformIntoNumber(key);
+
+    // Calculate the bucket index by taking the modulus of the hash value with the table's size.
+    // This ensures the index is within the range [0, table->size - 1].
     return hash % table->size;
 }
+
 
 
 status destroyHashTable(hashTable table) {

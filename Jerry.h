@@ -1,7 +1,7 @@
 #ifndef JERRY_H
 #define JERRY_H
 
-#include <stdbool.h>
+
 #include "Defs.h"
 
 //planet struct contain name(str) and 3 cordination(float pointer)

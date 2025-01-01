@@ -1,31 +1,16 @@
-# Makefile עבור פרויקט JerryBoree
-
-# הגדרת משתנים
-CC = gcc
-CFLAGS = -Wall -Wextra -I. -g
-LDFLAGS =
-EXEC = main
-
-# רשימת קבצי המקור
-SRC = JerryBoree.c Jerry.c LinkedList.c KeyValuePair.c HashTable.c MultiValueHashTable.c
-
-# המרה לקבצי אובייקט
-OBJ = $(SRC:.c=.o)
-
-# היעד הראשי
-all: $(EXEC)
-
-# כלל לבניית התוכנית
-$(EXEC): $(OBJ)
-	$(CC) $(CFLAGS) -o $(EXEC) $(OBJ) $(LDFLAGS)
-
-# כלל לבניית קובץ אובייקט מתוך קובץ מקור עם תלותיות
-%.o: %.c %.h
-	$(CC) $(CFLAGS) -c $< -o $@
-
-# כלל לניקוי הקבצים שנוצרו
+JerryBoree: Jerry.o LinkedList.o KeyValuePair.o HashTable.o MultiValueHashTable.o JerryBoreeMain.o
+	gcc Jerry.o LinkedList.o KeyValuePair.o HashTable.o MultiValueHashTable.o JerryBoreeMain.o -o JerryBoree
+Jerry.o: Jerry.c Jerry.h
+	gcc -c Jerry.c
+LinkedList.o: LinkedList.c LinkedList.h
+	gcc -c LinkedList.c
+KeyValuePair.o: KeyValuePair.c KeyValuePair.h
+	gcc -c KeyValuePair.c
+HashTable.o: LinkedList.c LinkedList.h KeyValuePair.c KeyValuePair.h HashTable.c HashTable.h
+	gcc -c HashTable.c
+MultiValueHashTable.o: LinkedList.c LinkedList.h KeyValuePair.c KeyValuePair.h HashTable.c HashTable.h MultiValueHashTable.c MultiValueHashTable.h
+	gcc -c MultiValueHashTable.c
+JerryBoreeMain.o: LinkedList.c LinkedList.h KeyValuePair.c KeyValuePair.h HashTable.c HashTable.h MultiValueHashTable.c MultiValueHashTable.h JerryBoreeMain.c
+	gcc -c JerryBoreeMain.c
 clean:
-	rm -f $(OBJ) $(EXEC)
-
-# הגדרת .PHONY
-.PHONY: all clean
+	rm -f *.o JerryBoree

@@ -35,7 +35,7 @@
 			"compileCommandFragments" : 
 			[
 				{
-					"fragment" : "-Os -DNDEBUG -std=gnu11 -fdiagnostics-color=always"
+					"fragment" : "-std=gnu11 -fdiagnostics-color=always"
 				}
 			],
 			"language" : "C",
@@ -64,10 +64,6 @@
 	{
 		"commandFragments" : 
 		[
-			{
-				"fragment" : "-Os -DNDEBUG",
-				"role" : "flags"
-			},
 			{
 				"fragment" : "",
 				"role" : "flags"
@@ -181,7 +177,7 @@
 		{
 			"backtrace" : 1,
 			"compileGroupIndex" : 0,
-			"path" : "JerryBoree.c",
+			"path" : "JerryBoreeMain.c",
 			"sourceGroupIndex" : 0
 		}
 	],

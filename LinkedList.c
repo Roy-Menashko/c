@@ -3,7 +3,6 @@
 //
 #include <stdlib.h>
 #include <string.h>
-#include <stdbool.h>
 #include <stdio.h>
 #include "LinkedList.h"
 
@@ -28,7 +27,6 @@ LinkedList createLinkedList(FreeFunction free_func, EqualFunction compare_func, 
     // Allocate memory for a new Linked_List structure
     LinkedList list = (LinkedList)malloc(sizeof(struct Linked_List));
     if (!list) { // Check if memory allocation failed
-        perror("Failed to allocate memory for LinkedList"); // Print an error message
         return NULL; // Return NULL if memory allocation failed
     }
 

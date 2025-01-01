@@ -10,7 +10,7 @@ set(CMAKE_DEPENDS_LANGUAGES
 set(CMAKE_DEPENDS_DEPENDENCY_FILES
   "/mnt/c/Users/Avishur/CLionProjects/untitled/HashTable.c" "CMakeFiles/untitled.dir/HashTable.c.o" "gcc" "CMakeFiles/untitled.dir/HashTable.c.o.d"
   "/mnt/c/Users/Avishur/CLionProjects/untitled/Jerry.c" "CMakeFiles/untitled.dir/Jerry.c.o" "gcc" "CMakeFiles/untitled.dir/Jerry.c.o.d"
-  "/mnt/c/Users/Avishur/CLionProjects/untitled/JerryBoree.c" "CMakeFiles/untitled.dir/JerryBoree.c.o" "gcc" "CMakeFiles/untitled.dir/JerryBoree.c.o.d"
+  "/mnt/c/Users/Avishur/CLionProjects/untitled/JerryBoreeMain.c" "CMakeFiles/untitled.dir/JerryBoreeMain.c.o" "gcc" "CMakeFiles/untitled.dir/JerryBoreeMain.c.o.d"
   "/mnt/c/Users/Avishur/CLionProjects/untitled/KeyValuePair.c" "CMakeFiles/untitled.dir/KeyValuePair.c.o" "gcc" "CMakeFiles/untitled.dir/KeyValuePair.c.o.d"
   "/mnt/c/Users/Avishur/CLionProjects/untitled/LinkedList.c" "CMakeFiles/untitled.dir/LinkedList.c.o" "gcc" "CMakeFiles/untitled.dir/LinkedList.c.o.d"
   "/mnt/c/Users/Avishur/CLionProjects/untitled/ManageJerries.c" "CMakeFiles/untitled.dir/ManageJerries.c.o" "gcc" "CMakeFiles/untitled.dir/ManageJerries.c.o.d"

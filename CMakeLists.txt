@@ -15,4 +15,4 @@ add_executable(untitled ManageJerries.c
         HashTable.h
         MultiValueHashTable.c
         MultiValueHashTable.h
-        JerryBoree.c)
+        JerryBoreeMain.c)

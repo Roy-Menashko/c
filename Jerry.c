@@ -1,6 +1,5 @@
 #include <stdlib.h>
 #include <string.h>
-#include <stdbool.h>
 #include <stdio.h>
 #include "Jerry.h"
 
@@ -54,14 +53,12 @@ PhysicalCharacteristics* createPhysicalCharacteristics(char* name, float value) 
     // Allocate memory for the PhysicalCharacteristics struct
     PhysicalCharacteristics* characteristics = (PhysicalCharacteristics*)malloc(sizeof(PhysicalCharacteristics));
     if (!characteristics) { // Check if memory allocation failed
-        printf("Memory Problem\n");
         return NULL; // Return NULL if allocation failed
     }
 
     // Allocate memory for the name string
     characteristics->name = (char*)malloc(strlen(name) + 1); // +1 for the null-terminator
     if (!characteristics->name) { // Check if memory allocation for the name failed
-        printf("Memory Problem\n");
         free(characteristics); // Free the previously allocated struct memory
         return NULL; // Return NULL if allocation failed
     }
@@ -85,14 +82,14 @@ Planet* createPlanet(char* name, float x, float y, float z) {
     // Allocate memory for the Planet struct
     Planet* planet = (Planet*)malloc(sizeof(Planet));
     if (!planet) { // Check if memory allocation failed
-        printf("Memory Problem\n");
+
         return NULL; // Return NULL if allocation failed
     }
 
     // Allocate memory for the planet name
     planet->name = (char*)malloc(strlen(name) + 1); // +1 for the null-terminator
     if (!planet->name) { // Check if memory allocation for the name failed
-        printf("Memory Problem\n");
+
         free(planet); // Free the previously allocated Planet struct
         return NULL; // Return NULL if allocation failed
     }
@@ -112,20 +109,20 @@ Planet* createPlanet(char* name, float x, float y, float z) {
 Origin* createOrigin(Planet* planet, char* meimad) {
     // Check if the input planet or meimad is NULL
     if (!planet || !meimad) {
-        return NULL; // Return NULL if either input is invalid
+        return NULL; // Return NULL if either input is invalidddd
     }
 
     // Allocate memory for the Origin struct
     Origin* origin = (Origin*)malloc(sizeof(Origin));
     if (!origin) { // Check if memory allocation failed
-        printf("Memory Problem\n");
+
         return NULL; // Return NULL if allocation failed
     }
 
     // Allocate memory for the meimad (dimension name) string
     origin->meimad = (char*)malloc(strlen(meimad) + 1); // +1 for the null-terminator
     if (!origin->meimad) { // Check if memory allocation for the meimad failed
-        printf("Memory Problem\n");
+
         free(origin); // Free the previously allocated Origin struct
         return NULL; // Return NULL if allocation failed
     }
@@ -163,7 +160,7 @@ status add_physical_to_jerry(Jerry* jerry, PhysicalCharacteristics* physical) {
     // Increase the size of the array by one
     PhysicalCharacteristics** temp = realloc(jerry->his_physical, sizeof(PhysicalCharacteristics*) * (jerry->num_of_pyhshical + 1));
     if (!temp) { // Check if reallocation failed
-        printf("Memory Problem\n");
+
         return failure; // Exit the function if memory allocation failed
     }
 
@@ -389,36 +386,60 @@ status destoyJerry(Jerry* jerry) {
     free(jerry); // finally free the Jerry
     return success;
 }
-bool compare_planets(Planet* planet,char* name) {
+bool compare_planets(Planet* planet, char* name) {
+    // Check if either the planet pointer or the name pointer is NULL.
+    // If either is NULL, the comparison cannot proceed, so return false.
     if (planet == NULL || name == NULL) {
-        return false;
+        return false; // One or both inputs are invalid.
     }
+
+    // Use strcmp to compare the name of the planet (planet->name)
+    // with the given name (name). strcmp returns 0 if the two strings are equal.
     if (strcmp(planet->name, name) == 0) {
-        return true;
+        return true; // The names match, so return true.
     }
+
+    // If the names do not match, return false.
     return false;
 }
-bool compare_jerry(Jerry* jerry,char* id) {
+
+bool compare_jerry(Jerry* jerry, char* id) {
+    // Check if the input 'jerry' pointer, its ID field, or the 'id' pointer is NULL.
+    // If any of these is NULL, the comparison cannot proceed, so return false.
     if (jerry == NULL || jerry->ID == NULL || id == NULL) {
-        return false;
+        return false; // One or more inputs are invalid.
     }
-    if (strcmp(jerry->ID, id) == 0) {
-        return true;
-    }
-    return false;
 
+    // Use strcmp to compare the ID of the 'jerry' object (jerry->ID)
+    // with the given ID (id). strcmp returns 0 if the two strings are equal.
+    if (strcmp(jerry->ID, id) == 0) {
+        return true; // The IDs match, so return true.
+    }
+
+    // If the IDs do not match, return false.
+    return false;
 }
 
-float get_value(Jerry* jerry,char* physical) {
+
+float get_value(Jerry* jerry, char* physical) {
+    // Check if the 'jerry' pointer, its ID, or the 'physical' parameter is NULL.
+    // If any of these is NULL, the function cannot proceed, so return 'failure'.
     if (jerry == NULL || jerry->ID == NULL || physical == NULL) {
-        return failure;
+        return failure; // Invalid input, return 'failure'.
     }
+
+    // Iterate through the array of physical characteristics associated with the 'jerry' object.
+    // 'jerry->num_of_pyhshical' represents the number of physical characteristics.
     for (int i = 0; i < jerry->num_of_pyhshical; i++) {
+        // Compare the name of the current physical characteristic with the given 'physical' name.
+        // If they match (strcmp returns 0), return the corresponding 'value'.
         if (strcmp(jerry->his_physical[i]->name, physical) == 0) {
-            return jerry->his_physical[i]->value;
+            return jerry->his_physical[i]->value; // Return the value of the matched characteristic.
         }
     }
-    return failure;
 
+    // If no matching physical characteristic is found, return 'failure'.
+    return failure;
 }
+
 
