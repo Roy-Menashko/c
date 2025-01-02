@@ -1,14 +1,14 @@
-==295977== Memcheck, a memory error detector
-==295977== Copyright (C) 2002-2022, and GNU GPL'd, by Julian Seward et al.
-==295977== Using Valgrind-3.22.0 and LibVEX; rerun with -h for copyright info
-==295977== Command: ./JerryBoree 4 configuration_file.txt
-==295977== 
-==295977== 
-==295977== HEAP SUMMARY:
-==295977==     in use at exit: 0 bytes in 0 blocks
-==295977==   total heap usage: 101 allocs, 101 frees, 15,283 bytes allocated
-==295977== 
-==295977== All heap blocks were freed -- no leaks are possible
-==295977== 
-==295977== For lists of detected and suppressed errors, rerun with: -s
-==295977== ERROR SUMMARY: 0 errors from 0 contexts (suppressed: 0 from 0)
+==379337== Memcheck, a memory error detector
+==379337== Copyright (C) 2002-2022, and GNU GPL'd, by Julian Seward et al.
+==379337== Using Valgrind-3.22.0 and LibVEX; rerun with -h for copyright info
+==379337== Command: ./JerryBoree 4 configuration_file.txt
+==379337== 
+==379337== 
+==379337== HEAP SUMMARY:
+==379337==     in use at exit: 0 bytes in 0 blocks
+==379337==   total heap usage: 146 allocs, 146 frees, 16,107 bytes allocated
+==379337== 
+==379337== All heap blocks were freed -- no leaks are possible
+==379337== 
+==379337== For lists of detected and suppressed errors, rerun with: -s
+==379337== ERROR SUMMARY: 0 errors from 0 contexts (suppressed: 0 from 0)

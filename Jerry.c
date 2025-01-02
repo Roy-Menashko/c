@@ -16,7 +16,7 @@
 Jerry* createJerry(char* id, int happiness, Origin* his_origin) {
     // Validate input parameters: id and origin must not be NULL
     if (id == NULL || his_origin == NULL) {
-        return NULL; // Return NULL if inputs are invalid
+        return NULL; // Return NULL if inputs are invalidd
     }
 
     // Allocate memory for the Jerry struct

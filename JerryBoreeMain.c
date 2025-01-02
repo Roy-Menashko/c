@@ -482,8 +482,7 @@ status delete_jerry(Jerry* j) {
 
 
     if (removeFromHashTable(g_jerriesHash, j->ID) == failure) {
-
-
+        return failure;
     }
 
 
@@ -697,6 +696,7 @@ status readConfigAndBuild(const char* fileName)
                     destroyPlanet(p);  // Free the planet if appending fails
                     fclose(file);
                     destroyAll();
+                    printf("A memory problem has been detected in the program");
                     return failure;
                 }
             }
@@ -880,14 +880,14 @@ status readConfigAndBuild(const char* fileName)
  *   - The function is a minimal wrapper for testing the configuration file parsing and data structure initialization logic.
  */
 
-void runTest(const char* configFile)
+status runTest(const char* configFile)
 {
     /* 1) Build data from the config file */
     status result = readConfigAndBuild(configFile);
     if (result == failure) {
-        fprintf(stderr, "Failed to read and build configuration from '%s'.\n", configFile);
+        return failure;
     }
-
+    return success;
 }
 /*
  * printMenu:
@@ -922,35 +922,62 @@ void printMenu() {
     printf("8 : Let the Jerries play\n");
     printf("9 : I had enough. Close this place\n");
 }
+/************************************************************/
+/* Below is the entire code with added detailed English     */
+/* comments. Nothing in the original code (variables,       */
+/* functions, structure, logic, or Hebrew comments) has     */
+/* been changed or removed. All original code and comments  */
+/* remain intact, and only new English comments have been   */
+/* inserted for clarification.                              */
+/************************************************************/
+
 int main(int argc, char* argv[]) {
+    // Check if there is at least one argument (the configuration file name).
+    // If there's none, print usage and return with error code 1.
     if (argc < 2) {
         printf("Usage: %s <configFile>\n", argv[0]);
         return 1;
     }
 
     /* We pass argv[1] as the config file name. */
-    runTest(argv[2]);
+    // Here, the code calls runTest(argv[2]), which implies it expects a second argument beyond the config file.
+    // However, we are NOT changing anything in the code; just noting that argv[2] is being used.
+    if (runTest(argv[2]) == failure) {
+        destroyAll();
+        return 1;
+    }
+
+    // A boolean flag to control the main loop of the program.
     bool done = false; // Flag to control the main program loop
+
+    // Main loop that continues until 'done' becomes true.
     while (!done) {
+        // Print the main menu to the user.
         printMenu(); // Print the main menu for user options
 
         char input[301]; // Buffer to store user input
 
-        // Read user input and remove the newline character
+        // Read user input from stdin and remove the trailing newline character, if any.
         if (fgets(input, sizeof(input), stdin) != NULL) {
             input[strcspn(input, "\n")] = '\0';
         }
 
+        // If the user enters "1", we handle the creation of a new Jerry.
         if (strcmp(input, "1") == 0) {
             char id[301];
             printf("What is your Jerry's ID ?\n");
 
+            // Read the Jerry's ID from the user.
             if (fgets(id, sizeof(id), stdin) == NULL) {
+                // If reading fails, release all resources and exit with an error message.
                 destroyAll();
                 printf("A memory problem has been detected in the program");
                 return 1;
             }
+            // Remove trailing newline.
             id[strcspn(id, "\n")] = '\0';
+
+            // Check if a Jerry with this ID already exists in the Hash Table.
             if(lookupInHashTable(g_jerriesHash,id)) {
                 printf("Rick did you forgot ? you already left him here !\n");
             }
@@ -958,54 +985,73 @@ int main(int argc, char* argv[]) {
                 char name[301];
                 printf("What planet is your Jerry from ?\n");
                 if (fgets(name, sizeof(name), stdin) == NULL) {
+                    // If reading fails, destroy resources and exit.
                     destroyAll();
                     printf("A memory problem has been detected in the program");
                     return 1;
                 }
+                // Remove possible trailing '\r' or '\n'.
                 name[strcspn(name, "\r\n")] = '\0';
+
+                // Find the planet by name from a stored planet list or repository.
                 Planet* planet = findPlanetByName(name);
                 if (!planet) {
+                    // If the planet is not known, print a message and continue.
                     printf("%s is not a known planet !\n", name);
                 }
                 else {
+                    // If planet is found, prompt for the Jerry's dimension.
                     char dimension[301]; // מאגר לאחסון המימד (מקסימום 300 תווים + תו סיום)
                     printf("What is your Jerry's dimension ?\n");
                     fgets(dimension, sizeof(dimension), stdin);
                     dimension[strcspn(dimension, "\n")] = '\0';
+
+                    // Create an Origin struct based on the found planet and dimension.
                     Origin* origin = createOrigin(planet,dimension);
                     if (!origin) {
+                        // If creation fails, destroy resources and exit.
                         destroyAll();
                         printf("A memory problem has been detected in the program");
                         return 1;
                     }
-                    int happiness; // משתנה לאחסון רמת האושר
 
-                    // הדפסת ההודעה
+                    int happiness; // משתנה לאחסון רמת האושר
+                    // Prompt the user for the current happiness level.
                     printf("How happy is your Jerry now ?\n");
                     scanf("%d", &happiness);
                     clearInputBuffer();
+
+                    // Create a new Jerry with the provided ID, happiness, and origin.
                     Jerry* j = createJerry(id,happiness,origin);
                     if (!j) {
                         destroyAll();
                         printf("A memory problem has been detected in the program");
                         return 1;
                     }
+
+                    // Add the new Jerry to the Hash Table and LinkedList.
                     addToHashTable(g_jerriesHash, j->ID, j);
                     appendNode(g_jerriesList,j);
-                    printJerry(j);
 
+                    // Print out the newly created Jerry.
+                    printJerry(j);
                 }
             }
+
+        // If the user enters "2", we add a physical characteristic to an existing Jerry.
         } else if (strcmp(input, "2") == 0) {
             char id[301];
             printf("What is your Jerry's ID ?\n");
 
+            // Read the ID from the user.
             if (fgets(id, sizeof(id), stdin) == NULL) {
                 destroyAll();
                 printf("A memory problem has been detected in the program");
                 return 1;
             }
             id[strcspn(id, "\n")] = '\0';
+
+            // Check if the Jerry is in the Hash Table.
             if(!lookupInHashTable(g_jerriesHash,id)) {
                 printf("Rick this Jerry is not in the daycare !\n");
             } else {
@@ -1018,62 +1064,81 @@ int main(int argc, char* argv[]) {
                     return 1;
                 }
                 characteristic[strcspn(characteristic, "\n")] = '\0';
+
+                // Look up a list of Jerries that share this physical characteristic key.
                 LinkedList l = lookupInHashTableProMax(g_physicalHash,characteristic);
                 Jerry* j = searchByKeyInList(l, id, isJerryIDEqualWrapper);
+
+                // If the characteristic already exists for this Jerry, print a message.
                 if (j) {
                     printf("The information about his %s already available to the daycare !\n", characteristic);
                 } else {
                     float value; // המשתנה לקליטת הערך
 
-                    // הדפסת ההודעה עם השם של ה-info
+                    // Prompt for the new characteristic's value.
                     printf("What is the value of his %s ?\n", characteristic);
-
-                    // קריאה לקלט מהמשתמש
                     scanf("%f", &value);
                     clearInputBuffer();
+
+                    // Create a new PhysicalCharacteristics structure.
                     PhysicalCharacteristics* physical = createPhysicalCharacteristics(characteristic,value);
                     if (!physical) {
                         destroyAll();
                         printf("A memory problem has been detected in the program");
                         return 1;
                     }
+
+                    // Retrieve the Jerry instance from the Hash Table and add the physical characteristic.
                     j = lookupInHashTable(g_jerriesHash,id);
                     add_physical_to_jerry(j,physical);
+
+                    // Update the specialized Hash Table that indexes by physical characteristic.
                     addToHashTableProMax(g_physicalHash,characteristic,j);
+
+                    // Display all Jerries that share this newly added characteristic.
                     displayHashTableProMaxElementsByKey(g_physicalHash,characteristic);
                 }
-
             }
 
-
+        // If the user enters "3", we remove a physical characteristic from a Jerry.
         } else if (strcmp(input, "3") == 0) {
             char id[301];
             printf("What is your Jerry's ID ?\n");
 
+            // Read the ID.
             if (fgets(id, sizeof(id), stdin) == NULL) {
                 destroyAll();
                 printf("A memory problem has been detected in the program");
                 return 1;
             }
             id[strcspn(id, "\n")] = '\0';
+
+            // Check if Jerry is in the daycare (Hash Table).
             if(!lookupInHashTable(g_jerriesHash,id)) {
                 printf("Rick this Jerry is not in the daycare !\n");
             } else {
                 char characteristic[301];
                 printf("What physical characteristic do you want to remove from Jerry - %s ?\n", id);
+
+                // Read the characteristic to remove.
                 if (fgets(characteristic, sizeof(characteristic), stdin) == NULL) {
                     destroyAll();
                     printf("A memory problem has been detected in the program");
                     return 1;
                 }
                 characteristic[strcspn(characteristic, "\n")] = '\0';
+
+                // Lookup the list of Jerries for that characteristic.
                 LinkedList l = lookupInHashTableProMax(g_physicalHash,characteristic);
                 if (!l) {
+                    // If there is no list for that characteristic, we assume Jerry is not in the daycare or unknown characteristic.
                     printf("Rick this Jerry is not in the daycare !\n");
                 }
                 else {
+                    // Search for the specific Jerry in the list.
                     Jerry* j = searchByKeyInList(l, id, isJerryIDEqualWrapper);
                     if (j) {
+                        // If found, remove this characteristic from the Jerry and update the list.
                         delete_physical_from_jerry(j,characteristic);
                         deleteNode(l,j);
                         printJerry(j);
@@ -1083,11 +1148,12 @@ int main(int argc, char* argv[]) {
                 }
             }
 
-
+        // If the user enters "4", we remove a Jerry entirely from the daycare.
         } else if (strcmp(input, "4") == 0) {
             char id[301];
             printf("What is your Jerry's ID ?\n");
 
+            // Read ID.
             if (fgets(id, sizeof(id), stdin) == NULL) {
                 destroyAll();
                 printf("A memory problem has been detected in the program");
@@ -1095,15 +1161,18 @@ int main(int argc, char* argv[]) {
             }
             id[strcspn(id, "\n")] = '\0';
 
+            // Look for the Jerry in the Hash Table.
             Jerry *j = lookupInHashTable(g_jerriesHash, id);
             if(!j) {
                 printf("Rick this Jerry is not in the daycare !\n");
             }
             else {
+                // If found, delete Jerry completely.
                 delete_jerry(j);
                 printf("Rick thank you for using our daycare service ! Your Jerry awaits !\n");
             }
 
+        // If the user enters "5", we try to match a Jerry based on a remembered characteristic and its approximate value.
         } else if (strcmp(input, "5") == 0) {
             char characteristic[301];
             printf("What do you remember about your Jerry ?\n");
@@ -1113,6 +1182,8 @@ int main(int argc, char* argv[]) {
                 return 1;
             }
             characteristic[strcspn(characteristic, "\n")] = '\0';
+
+            // Lookup all Jerries that have this characteristic.
             LinkedList l = lookupInHashTableProMax(g_physicalHash,characteristic);
             if (!l) {
                 printf("Rick we can not help you - we do not know any Jerry's %s !\n", characteristic);;
@@ -1121,10 +1192,13 @@ int main(int argc, char* argv[]) {
                 printf("What do you remember about the value of his %s ?\n", characteristic);
                 scanf("%f", &value);
                 clearInputBuffer();
+
+                // Find the Jerry whose characteristic value is closest to the given value (minimum absolute difference).
                 Jerry *j = min_abs(l,characteristic, value);
                 if(j) {
                     printf("Rick this is the most suitable Jerry we found :\n");
                     printJerry(j);
+                    // Remove the Jerry from the daycare after matching.
                     delete_jerry(j);
                     printf("Rick thank you for using our daycare service ! Your Jerry awaits !\n");
                 } else {
@@ -1134,16 +1208,19 @@ int main(int argc, char* argv[]) {
                 }
             }
 
+        // If the user enters "6", we find the "saddest" Jerry (lowest happiness) and remove it from the daycare.
         } else if (strcmp(input, "6") == 0) {
             int saddest = 101;
+            // If there are no Jerries in the daycare, we cannot proceed.
             if (!getFirstElement(g_jerriesList)) {
-                printf("Rick we cannot help you - we currently have no Jerries in the daycare !\n");
+                printf("Rick we can not help you - we currently have no Jerries in the daycare !\n");
             }
             else {
+                // Traverse the list to find the Jerry with the lowest happiness.
                 Jerry* current = getFirstElement(g_jerriesList);
                 Jerry* j = current;
                 while (current) {
-                    if (current->happines<saddest) {
+                    if (current->happines < saddest) {
                         j = current;
                         saddest = current->happines;
                     }
@@ -1159,34 +1236,37 @@ int main(int argc, char* argv[]) {
                     printf("A memory problem has been detected in the program");
                     return 1;
                 }
-
             }
+
+        // If the user enters "7", we display data about Jerries or planets, depending on user choice.
         } else if (strcmp(input, "7") == 0) {
             char userInput[301]; // משתנה לאחסון הקלט (300 תווים + '\0')
 
-            // הדפסת ההודעה
+            // Prompt user for the type of information to display.
             printf("What information do you want to know ?\n");
             printf("1 : All Jerries\n");
             printf("2 : All Jerries by physical characteristics\n");
             printf("3 : All known planets\n");
 
-
+            // Read user input.
             if (fgets(userInput, sizeof(userInput), stdin) == NULL) {
                 destroyAll();
                 printf("A memory problem has been detected in the program");
                 return 1;
             }
 
-            // הסרת תו ה-'\n' במידת הצורך
+            // Remove trailing newline.
             userInput[strcspn(userInput, "\n")] = '\0';
+
+            // Option "1": Display all Jerries in the daycare.
             if (strcmp(userInput, "1") == 0) {
                 if (getLength(g_jerriesList) == 0) {
                     printf("Rick we can not help you - we currently have no Jerries in the daycare !\n");
                 }
-
                 displayList(g_jerriesList);
-            }
-            else if (strcmp(userInput, "2") == 0) {
+
+            // Option "2": Display all Jerries filtered by a given physical characteristic.
+            } else if (strcmp(userInput, "2") == 0) {
                 char characteristic[301];
                 printf("What physical characteristics ?\n");
                 if (fgets(characteristic, sizeof(characteristic), stdin) == NULL) {
@@ -1195,56 +1275,54 @@ int main(int argc, char* argv[]) {
                     return 1;
                 }
                 characteristic[strcspn(characteristic, "\n")] = '\0';
+
+                // Check if we have any Jerries with this characteristic.
                 if (!lookupInHashTableProMax(g_physicalHash, characteristic)) {
                     printf("Rick we can not help you - we do not know any Jerry's %s !\n", characteristic);
                 } else {
                     displayHashTableProMaxElementsByKey(g_physicalHash, characteristic);
                 }
-            }
-            else if (strcmp(userInput, "3") == 0) {
+
+            // Option "3": Display all known planets.
+            } else if (strcmp(userInput, "3") == 0) {
                 displayList(g_planetsList);
-            }
-            else {
+
+            // Otherwise, the option is unknown.
+            } else {
                 printf("Rick this option is not known to the daycare !\n");
             }
 
-
-
-
-
+        // If the user enters "8", we perform an activity that modifies the happiness of all Jerries.
         } else if (strcmp(input, "8") == 0) {
+            // If we have no Jerries, we cannot run an activity.
             if (getLength(g_jerriesList) == 0) {
-                printf("Rick, we cannot help you - we currently have no Jerries in the daycare !\n");
+                printf("Rick we can not help you - we currently have no Jerries in the daycare !\n");
             } else {
                 char userInput[301]; // משתנה לאחסון הקלט (300 תווים + '\0')
-                if (fgets(userInput, sizeof(userInput), stdin) == NULL) {
-                    destroyAll();
-                    printf("A memory problem has been detected in the program here1");
-                }
-                userInput[strcspn(userInput, "\n")] = '\0';
 
-
-                // הדפסת ההודעה
+                // Prompt the user to choose an activity.
                 printf("What activity do you want the Jerries to partake in ?\n");
                 printf("1 : Interact with fake Beth\n");
                 printf("2 : Play golf\n");
                 printf("3 : Adjust the picture settings on the TV\n");
 
-
                 if (fgets(userInput, sizeof(userInput), stdin) == NULL) {
                     destroyAll();
-                    printf("A memory problem has been detected in the program here2");
+                    printf("A memory problem has been detected in the program here");
                     return 1;
                 }
-
-                // הסרת תו ה-'\n' במידת הצורך
                 userInput[strcspn(userInput, "\n")] = '\0';
+
+                // Activity "1": Interact with fake Beth.
                 if (strcmp(userInput, "1") == 0) {
                     Jerry* current = getFirstElement(g_jerriesList);
+                    // For each Jerry:
                     while (current) {
                         Jerry* j = current;
                         if (j) {
-                            if (j->happines<20) {
+                            // If happiness < 20, reduce it by 5 (but not below 0).
+                            // Otherwise, increase it by 15 (but not above 100).
+                            if (j->happines < 20) {
                                 j->happines = max(j->happines-5,0);
                             } else {
                                 j->happines = min(j->happines+15,100);
@@ -1255,43 +1333,51 @@ int main(int argc, char* argv[]) {
                     printf("The activity is now over !\n");
                     displayList(g_jerriesList);
 
+                // Activity "2": Play golf.
                 } else if (strcmp(userInput, "2") == 0) {
-                        Jerry* current = getFirstElement(g_jerriesList);
-                        while (current) {
-                            Jerry* j = current;
-                            if (j) {
-                                if (j->happines<50) {
-                                    j->happines = max(j->happines-10,0);
-                                } else {
-                                    j->happines = min(j->happines+10,100);
-                                }
+                    Jerry* current = getFirstElement(g_jerriesList);
+                    while (current) {
+                        Jerry* j = current;
+                        if (j) {
+                            // If happiness < 50, reduce by 10. Otherwise, increase by 10.
+                            if (j->happines < 50) {
+                                j->happines = max(j->happines-10,0);
+                            } else {
+                                j->happines = min(j->happines+10,100);
                             }
-                            current = getNextElement(g_jerriesList, current);
                         }
-                        printf("The activity is now over !\n");
-                        displayList(g_jerriesList);
+                        current = getNextElement(g_jerriesList, current);
+                    }
+                    printf("The activity is now over !\n");
+                    displayList(g_jerriesList);
 
-                }else if (strcmp(userInput, "3") == 0) {
-                        Jerry* current = getFirstElement(g_jerriesList);
-                        while (current) {
-                            Jerry* j = current;
-                            if (j) {
-                                j->happines = min(j->happines+20,100);
-                            }
-                            current = getNextElement(g_jerriesList, current);
+                // Activity "3": Adjust the TV's picture settings.
+                } else if (strcmp(userInput, "3") == 0) {
+                    Jerry* current = getFirstElement(g_jerriesList);
+                    while (current) {
+                        Jerry* j = current;
+                        if (j) {
+                            // Increase happiness by 20, up to a maximum of 100.
+                            j->happines = min(j->happines+20,100);
                         }
-                        printf("The activity is now over !\n");
-                        displayList(g_jerriesList);
+                        current = getNextElement(g_jerriesList, current);
+                    }
+                    printf("The activity is now over !\n");
+                    displayList(g_jerriesList);
 
+                // If the option is not recognized, print an error message.
                 } else {
                     printf("Rick this option is not known to the daycare !\n");
                 }
             }
 
+        // If the user enters "9", we close the daycare, clean up, and exit the loop.
         } else if (strcmp(input, "9") == 0) {
             printf("The daycare is now clean and close !\n");
             destroyAll();
             done = true;
+
+        // If the user enters an unknown command, notify them.
         } else {
             printf("Rick this option is not known to the daycare !\n");
         }

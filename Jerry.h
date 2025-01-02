@@ -231,10 +231,30 @@ void destroyEverything(Planet** all_planets, int planets_count,
                        Jerry** all_jerry, int jerry_count);
 
 
-bool compare_planets(Planet* planet,char* name); //+++
+// Function to compare a planet's name with a given name.
+// Parameters:
+// - planet: Pointer to the Planet object to compare.
+// - name: Name to compare the planet's name with.
+// Returns:
+// - true if the planet's name matches the given name, false otherwise.
+bool compare_planets(Planet* planet, char* name); //+++
 
-bool compare_jerry(Jerry* jerry,char* id); //+++
+// Function to compare a Jerry's ID with a given ID.
+// Parameters:
+// - jerry: Pointer to the Jerry object to compare.
+// - id: ID to compare the Jerry's ID with.
+// Returns:
+// - true if the Jerry's ID matches the given ID, false otherwise.
+bool compare_jerry(Jerry* jerry, char* id); //+++
 
-float get_value(Jerry* jerry,char* physical); //+++
+// Function to retrieve the value of a specific physical characteristic of a Jerry.
+// Parameters:
+// - jerry: Pointer to the Jerry object whose physical characteristic value is being retrieved.
+// - physical: Name of the physical characteristic to retrieve (e.g., "height", "weight").
+// Returns:
+// - The value of the specified physical characteristic for the given Jerry.
+// Note:
+// - Ensure the physical characteristic exists for the Jerry before calling this function.
+float get_value(Jerry* jerry, char* physical); //+++
 
 #endif // JERRY_H
