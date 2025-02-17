@@ -13,36 +13,45 @@
 
 
 
-Jerry* createJerry(char* id, int happiness, Origin* his_origin) {
-    // Validate input parameters: id and origin must not be NULL
-    if (id == NULL || his_origin == NULL) {
-        return NULL; // Return NULL if inputs are invalidd
+Jerry* createJerry(char* id, int happiness, Planet* planet, char* meimad) {
+    // בדיקת קלט
+    if (!id || !planet || !meimad) {
+        return NULL;
     }
 
-    // Allocate memory for the Jerry struct
+    // הקצאת זיכרון עבור Jerry
     Jerry* jerry = (Jerry*)malloc(sizeof(Jerry));
-    if (jerry == NULL) { // Check if memory allocation failed
-        return NULL; // Return NULL if allocation failed
+    if (!jerry) {
+        return NULL;
     }
 
-    // Allocate memory for the Jerry's ID string
-    jerry->ID = (char*)malloc(strlen(id) + 1); // +1 for the null-terminator
-    if (!jerry->ID) { // Check if memory allocation for the ID failed
-        free(jerry); // Free the previously allocated memory for Jerry
-        return NULL; // Return NULL if allocation failed
+    // הקצאת זיכרון למזהה (ID) של Jerry
+    jerry->ID = (char*)malloc(strlen(id) + 1);
+    if (!jerry->ID) {
+        free(jerry);
+        return NULL;
     }
-
-    // Copy the ID string to the allocated memory
+    // העתקה של המזהה למקום שהוקצה
     strcpy(jerry->ID, id);
 
-    // Initialize the remaining Jerry struct fields
-    jerry->happines = happiness;          // Set happiness level
-    jerry->his_origin = his_origin;       // Set pointer to the origin
-    jerry->his_physical = NULL;           // Initialize physical characteristics array to NULL
-    jerry->num_of_pyhshical = 0;          // Initialize the count of physical characteristics to 0
+    // הקצאת Origin מתוך פונקציית createOrigin
+    Origin* his_origin = createOrigin(planet, meimad);
+    if (!his_origin) {
+        // אם יצירת Origin נכשלה, משחררים את הזיכרון של Jerry ו־ID
+        free(jerry->ID);
+        free(jerry);
+        return NULL;
+    }
 
-    return jerry; // Return the pointer to the newly created Jerry object
+    // השמת הנתונים במבנה של Jerry
+    jerry->happines = happiness;
+    jerry->his_origin = his_origin;
+    jerry->his_physical = NULL;
+    jerry->num_of_pyhshical = 0;
+
+    return jerry;
 }
+
 
 PhysicalCharacteristics* createPhysicalCharacteristics(char* name, float value) {
     // Check if the input name is NULL

@@ -35,16 +35,8 @@ typedef struct {
 } Jerry;
 
 
-/**
- * @brief Creates a new Jerry with no PhysicalCharacteristics.
- *
- * @param id          Pointer to the Jerry's ID (string).
- * @param happines    Jerry's happiness level (integer, range: 0-100).
- * @param his_origin  Pointer to the Jerry's Origin (planet and dimension).
- *
- * @return Pointer to the newly created Jerry, or NULL if creation fails.
- */
-Jerry* createJerry(char *id, int happines, Origin *his_origin); //+++
+// gets id hapiness planet and meimad call the function createOrigin and than create new jerry
+Jerry* createJerry(char* id, int happiness, Planet* planet, char* meimad); //+++
 
 /**
  * @brief Creates a new Planet with the given name and coordinates.

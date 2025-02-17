@@ -541,10 +541,7 @@ void destroyAll()
    הפונקציה המרכזית: readConfigAndBuild – קוראת את הקובץ ומבנה את המבנים
    ------------------------------------------------------------------ */
 
-/*
- * Fix: in C, `fgets` requires a `FILE*`, not a `const char*`.
- * So we must open the file using `fopen`.
- */
+
 /*
  * readConfigAndBuild:
  * - Purpose: Reads a configuration file, builds linked lists of Planets and Jerries, and constructs hash tables.
@@ -757,20 +754,8 @@ status readConfigAndBuild(const char* fileName)
                     }
 
                     /* Create Origin and then Jerry */
-                    Origin* orig = createOrigin(pFound, dimension);
-                    if (!orig) {
-                        // Handle memory allocation failure
-                        fclose(file);
-                        destroyAll();
-                        printf("A memory problem has been detected in the program");
-                        return failure;
-                    }
-
-                    // Create the Jerry object
-                    Jerry* j = createJerry(id, happiness, orig);
+                    Jerry* j = createJerry(id, happiness, pFound, dimension);
                     if (!j) {
-                        // Free the Origin if Jerry creation fails
-                        destroyOrigin(orig);
                         fclose(file);
                         destroyAll();
                         printf("A memory problem has been detected in the program");
@@ -820,7 +805,11 @@ status readConfigAndBuild(const char* fileName)
     Element node = getFirstElement(g_jerriesList);
     while (node) {
         Jerry* j = (Jerry*)node;
-        addToHashTable(g_jerriesHash, j->ID, j);
+        if(addToHashTable(g_jerriesHash, j->ID, j)==failure) {
+            destroyAll();
+            printf("A memory problem has been detected in the program");
+            return 1;
+        }
         node = getNextElement(g_jerriesList, node);
     }
 
@@ -858,7 +847,11 @@ status readConfigAndBuild(const char* fileName)
              * correctly match the Jerry structure definition.
              */
             char* physName = j->his_physical[i]->name;
-            addToHashTableProMax(g_physicalHash, physName, j);
+            if(addToHashTableProMax(g_physicalHash, physName, j)==failure) {
+                destroyAll();
+                printf("A memory problem has been detected in the program");
+                return 1;
+            }
         }
         node = getNextElement(g_jerriesList, node);
     }
@@ -1006,14 +999,7 @@ int main(int argc, char* argv[]) {
                     fgets(dimension, sizeof(dimension), stdin);
                     dimension[strcspn(dimension, "\n")] = '\0';
 
-                    // Create an Origin struct based on the found planet and dimension.
-                    Origin* origin = createOrigin(planet,dimension);
-                    if (!origin) {
-                        // If creation fails, destroy resources and exit.
-                        destroyAll();
-                        printf("A memory problem has been detected in the program");
-                        return 1;
-                    }
+
 
                     int happiness; // משתנה לאחסון רמת האושר
                     // Prompt the user for the current happiness level.
@@ -1022,7 +1008,7 @@ int main(int argc, char* argv[]) {
                     clearInputBuffer();
 
                     // Create a new Jerry with the provided ID, happiness, and origin.
-                    Jerry* j = createJerry(id,happiness,origin);
+                    Jerry* j = createJerry(id, happiness, planet, dimension);
                     if (!j) {
                         destroyAll();
                         printf("A memory problem has been detected in the program");
@@ -1030,11 +1016,23 @@ int main(int argc, char* argv[]) {
                     }
 
                     // Add the new Jerry to the Hash Table and LinkedList.
-                    addToHashTable(g_jerriesHash, j->ID, j);
-                    appendNode(g_jerriesList,j);
+                    if(addToHashTable(g_jerriesHash, j->ID, j)==failure) {
+                        destroyAll();
+                        printf("A memory problem has been detected in the program");
+                        return 1;
+                    }
+                    if(appendNode(g_jerriesList,j)==failure) {
+                        destroyAll();
+                        printf("A memory problem has been detected in the program");
+                        return 1;
+                    }
 
                     // Print out the newly created Jerry.
-                    printJerry(j);
+                    if(printJerry(j)==failure) {
+                        destroyAll();
+                        printf("A memory problem has been detected in the program");
+                        return 1;
+                    }
                 }
             }
 
@@ -1067,6 +1065,11 @@ int main(int argc, char* argv[]) {
 
                 // Look up a list of Jerries that share this physical characteristic key.
                 LinkedList l = lookupInHashTableProMax(g_physicalHash,characteristic);
+                if (!l) {
+                    destroyAll();
+                    printf("A memory problem has been detected in the program");
+                    return 1;
+                }
                 Jerry* j = searchByKeyInList(l, id, isJerryIDEqualWrapper);
 
                 // If the characteristic already exists for this Jerry, print a message.
@@ -1090,13 +1093,30 @@ int main(int argc, char* argv[]) {
 
                     // Retrieve the Jerry instance from the Hash Table and add the physical characteristic.
                     j = lookupInHashTable(g_jerriesHash,id);
-                    add_physical_to_jerry(j,physical);
+                    if (!j) {
+                        destroyAll();
+                        printf("A memory problem has been detected in the program");
+                        return 1;
+                    }
+                    if(add_physical_to_jerry(j,physical)==failure) {
+                        destroyAll();
+                        printf("A memory problem has been detected in the program");
+                        return 1;
+                    }
 
                     // Update the specialized Hash Table that indexes by physical characteristic.
-                    addToHashTableProMax(g_physicalHash,characteristic,j);
+                    if(addToHashTableProMax(g_physicalHash,characteristic,j)==failure) {
+                        destroyAll();
+                        printf("A memory problem has been detected in the program");
+                        return 1;
+                    }
 
                     // Display all Jerries that share this newly added characteristic.
-                    displayHashTableProMaxElementsByKey(g_physicalHash,characteristic);
+                    if(displayHashTableProMaxElementsByKey(g_physicalHash,characteristic)==failure) {
+                        destroyAll();
+                        printf("A memory problem has been detected in the program");
+                        return 1;
+                    }
                 }
             }
 
@@ -1263,7 +1283,11 @@ int main(int argc, char* argv[]) {
                 if (getLength(g_jerriesList) == 0) {
                     printf("Rick we can not help you - we currently have no Jerries in the daycare !\n");
                 }
-                displayList(g_jerriesList);
+                if(displayList(g_jerriesList)==failure) {
+                    destroyAll();
+                    printf("A memory problem has been detected in the program");
+                    return 1;
+                }
 
             // Option "2": Display all Jerries filtered by a given physical characteristic.
             } else if (strcmp(userInput, "2") == 0) {
@@ -1280,12 +1304,20 @@ int main(int argc, char* argv[]) {
                 if (!lookupInHashTableProMax(g_physicalHash, characteristic)) {
                     printf("Rick we can not help you - we do not know any Jerry's %s !\n", characteristic);
                 } else {
-                    displayHashTableProMaxElementsByKey(g_physicalHash, characteristic);
+                    if(displayHashTableProMaxElementsByKey(g_physicalHash, characteristic)==failure) {
+                        destroyAll();
+                        printf("A memory problem has been detected in the program");
+                        return 1;
+                    }
                 }
 
             // Option "3": Display all known planets.
             } else if (strcmp(userInput, "3") == 0) {
-                displayList(g_planetsList);
+                if(displayList(g_planetsList)==failure) {
+                    destroyAll();
+                    printf("A memory problem has been detected in the program");
+                    return 1;
+                }
 
             // Otherwise, the option is unknown.
             } else {
@@ -1331,7 +1363,11 @@ int main(int argc, char* argv[]) {
                         current = getNextElement(g_jerriesList, current);
                     }
                     printf("The activity is now over !\n");
-                    displayList(g_jerriesList);
+                    if(displayList(g_jerriesList)==failure) {
+                        destroyAll();
+                        printf("A memory problem has been detected in the program");
+                        return 1;
+                    }
 
                 // Activity "2": Play golf.
                 } else if (strcmp(userInput, "2") == 0) {
@@ -1349,7 +1385,11 @@ int main(int argc, char* argv[]) {
                         current = getNextElement(g_jerriesList, current);
                     }
                     printf("The activity is now over !\n");
-                    displayList(g_jerriesList);
+                    if(displayList(g_jerriesList)==failure) {
+                        destroyAll();
+                        printf("A memory problem has been detected in the program");
+                        return 1;
+                    }
 
                 // Activity "3": Adjust the TV's picture settings.
                 } else if (strcmp(userInput, "3") == 0) {
@@ -1363,7 +1403,11 @@ int main(int argc, char* argv[]) {
                         current = getNextElement(g_jerriesList, current);
                     }
                     printf("The activity is now over !\n");
-                    displayList(g_jerriesList);
+                    if(displayList(g_jerriesList)==failure) {
+                        destroyAll();
+                        printf("A memory problem has been detected in the program");
+                        return 1;
+                    }
 
                 // If the option is not recognized, print an error message.
                 } else {
