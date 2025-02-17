@@ -1,6 +1,5 @@
 #include <stdlib.h>
 #include <string.h>
-#include <stdbool.h>
 #include <stdio.h>
 #include "Jerry.h"
 
@@ -14,36 +13,45 @@
 
 
 
-Jerry* createJerry(char* id, int happiness, Origin* his_origin) {
-    // Validate input parameters: id and origin must not be NULL
-    if (id == NULL || his_origin == NULL) {
-        return NULL; // Return NULL if inputs are invalid
+Jerry* createJerry(char* id, int happiness, Planet* planet, char* meimad) {
+    // בדיקת קלט
+    if (!id || !planet || !meimad) {
+        return NULL;
     }
 
-    // Allocate memory for the Jerry struct
+    // הקצאת זיכרון עבור Jerry
     Jerry* jerry = (Jerry*)malloc(sizeof(Jerry));
-    if (jerry == NULL) { // Check if memory allocation failed
-        return NULL; // Return NULL if allocation failed
+    if (!jerry) {
+        return NULL;
     }
 
-    // Allocate memory for the Jerry's ID string
-    jerry->ID = (char*)malloc(strlen(id) + 1); // +1 for the null-terminator
-    if (!jerry->ID) { // Check if memory allocation for the ID failed
-        free(jerry); // Free the previously allocated memory for Jerry
-        return NULL; // Return NULL if allocation failed
+    // הקצאת זיכרון למזהה (ID) של Jerry
+    jerry->ID = (char*)malloc(strlen(id) + 1);
+    if (!jerry->ID) {
+        free(jerry);
+        return NULL;
     }
-
-    // Copy the ID string to the allocated memory
+    // העתקה של המזהה למקום שהוקצה
     strcpy(jerry->ID, id);
 
-    // Initialize the remaining Jerry struct fields
-    jerry->happines = happiness;          // Set happiness level
-    jerry->his_origin = his_origin;       // Set pointer to the origin
-    jerry->his_physical = NULL;           // Initialize physical characteristics array to NULL
-    jerry->num_of_pyhshical = 0;          // Initialize the count of physical characteristics to 0
+    // הקצאת Origin מתוך פונקציית createOrigin
+    Origin* his_origin = createOrigin(planet, meimad);
+    if (!his_origin) {
+        // אם יצירת Origin נכשלה, משחררים את הזיכרון של Jerry ו־ID
+        free(jerry->ID);
+        free(jerry);
+        return NULL;
+    }
 
-    return jerry; // Return the pointer to the newly created Jerry object
+    // השמת הנתונים במבנה של Jerry
+    jerry->happines = happiness;
+    jerry->his_origin = his_origin;
+    jerry->his_physical = NULL;
+    jerry->num_of_pyhshical = 0;
+
+    return jerry;
 }
+
 
 PhysicalCharacteristics* createPhysicalCharacteristics(char* name, float value) {
     // Check if the input name is NULL
@@ -54,14 +62,12 @@ PhysicalCharacteristics* createPhysicalCharacteristics(char* name, float value) 
     // Allocate memory for the PhysicalCharacteristics struct
     PhysicalCharacteristics* characteristics = (PhysicalCharacteristics*)malloc(sizeof(PhysicalCharacteristics));
     if (!characteristics) { // Check if memory allocation failed
-        printf("Memory Problem\n");
         return NULL; // Return NULL if allocation failed
     }
 
     // Allocate memory for the name string
     characteristics->name = (char*)malloc(strlen(name) + 1); // +1 for the null-terminator
     if (!characteristics->name) { // Check if memory allocation for the name failed
-        printf("Memory Problem\n");
         free(characteristics); // Free the previously allocated struct memory
         return NULL; // Return NULL if allocation failed
     }
@@ -85,14 +91,14 @@ Planet* createPlanet(char* name, float x, float y, float z) {
     // Allocate memory for the Planet struct
     Planet* planet = (Planet*)malloc(sizeof(Planet));
     if (!planet) { // Check if memory allocation failed
-        printf("Memory Problem\n");
+
         return NULL; // Return NULL if allocation failed
     }
 
     // Allocate memory for the planet name
     planet->name = (char*)malloc(strlen(name) + 1); // +1 for the null-terminator
     if (!planet->name) { // Check if memory allocation for the name failed
-        printf("Memory Problem\n");
+
         free(planet); // Free the previously allocated Planet struct
         return NULL; // Return NULL if allocation failed
     }
@@ -112,20 +118,20 @@ Planet* createPlanet(char* name, float x, float y, float z) {
 Origin* createOrigin(Planet* planet, char* meimad) {
     // Check if the input planet or meimad is NULL
     if (!planet || !meimad) {
-        return NULL; // Return NULL if either input is invalid
+        return NULL; // Return NULL if either input is invalidddd
     }
 
     // Allocate memory for the Origin struct
     Origin* origin = (Origin*)malloc(sizeof(Origin));
     if (!origin) { // Check if memory allocation failed
-        printf("Memory Problem\n");
+
         return NULL; // Return NULL if allocation failed
     }
 
     // Allocate memory for the meimad (dimension name) string
     origin->meimad = (char*)malloc(strlen(meimad) + 1); // +1 for the null-terminator
     if (!origin->meimad) { // Check if memory allocation for the meimad failed
-        printf("Memory Problem\n");
+
         free(origin); // Free the previously allocated Origin struct
         return NULL; // Return NULL if allocation failed
     }
@@ -163,7 +169,7 @@ status add_physical_to_jerry(Jerry* jerry, PhysicalCharacteristics* physical) {
     // Increase the size of the array by one
     PhysicalCharacteristics** temp = realloc(jerry->his_physical, sizeof(PhysicalCharacteristics*) * (jerry->num_of_pyhshical + 1));
     if (!temp) { // Check if reallocation failed
-        printf("Memory Problem\n");
+
         return failure; // Exit the function if memory allocation failed
     }
 
@@ -193,48 +199,61 @@ bool has_physical(Jerry jerry, char* physical) {
 }
 
 status delete_physical_from_jerry(Jerry *jerry, char *physical_name) {
-    // Check if the input physical_name is NULL
-    if (physical_name == NULL) {
-        return failure; // Return failure if the physical_name is invalid
+    if (!jerry || !physical_name) {
+        return failure;
     }
 
-    // Check if the input Jerry pointer is NULL
-    if (jerry == NULL) {
-        return failure; // Return failure if the Jerry pointer is invalid
-    }
-
-    // Check if the Jerry has the specified PhysicalCharacteristic
+    // אם אין תכונה כזו, נכשל
     if (!has_physical(*jerry, physical_name)) {
-        return failure; // Return failure if the PhysicalCharacteristic does not exist
+        return failure;
     }
 
-    int index = 0; // Variable to store the index of the PhysicalCharacteristic to be deleted
-
-    // Find the index of the specified PhysicalCharacteristic
+    int index = -1;
+    // מוצאים את האינדקס שבו נמצא ה-physical_name
     for (int i = 0; i < jerry->num_of_pyhshical; i++) {
         if (strcmp(jerry->his_physical[i]->name, physical_name) == 0) {
             index = i;
+            break;
         }
     }
 
-    // Shift all elements after the deleted PhysicalCharacteristic one position to the left
+    if (index == -1) {
+        return failure; // לא אמור לקרות, אבל ליתר ביטחון
+    }
+
+    // ראשית משחררים את האובייקט
+    destroyPhysicalCharacteristics(jerry->his_physical[index]);
+
+    // מעבירים את כל אלו שאחרי האיבר – מקום אחד אחורה
     for (int i = index; i < jerry->num_of_pyhshical - 1; i++) {
         jerry->his_physical[i] = jerry->his_physical[i + 1];
     }
 
-    // Decrease the count of Jerry's PhysicalCharacteristics
+    // מורידים את מספר התכונות ב-1
     jerry->num_of_pyhshical--;
 
-    // Reallocate memory for the updated array size
-    PhysicalCharacteristics** temp = realloc(jerry->his_physical, jerry->num_of_pyhshical * sizeof(PhysicalCharacteristics*));
+    // עכשיו, אם יש עדיין תכונות, נקצה מחדש
+    if (jerry->num_of_pyhshical > 0) {
+        PhysicalCharacteristics** temp = realloc(
+            jerry->his_physical,
+            jerry->num_of_pyhshical * sizeof(PhysicalCharacteristics*)
+        );
 
-    // Update the pointer only if reallocation succeeded or the array size is zero
-    if (temp != NULL || jerry->num_of_pyhshical == 0) {
-        jerry->his_physical = temp;
+        // אם הצליח, עדכן
+        if (temp != NULL) {
+            jerry->his_physical = temp;
+        }
+        // אם נכשל, אפשר או להחזיר failure, או להשאיר את המצב הקודם
+    } else {
+        // אם אין יותר מאפיינים, שחרר את המערך ושים אותו כ-NULL
+        free(jerry->his_physical);
+        jerry->his_physical = NULL;
     }
 
-    return success; // Return success if the deletion was completed successfully
+    return success;
 }
+
+
 
 
 status printJerry(Jerry *jerry) {
@@ -376,23 +395,60 @@ status destoyJerry(Jerry* jerry) {
     free(jerry); // finally free the Jerry
     return success;
 }
-bool compare_planets(Planet* planet,char* name) {
+bool compare_planets(Planet* planet, char* name) {
+    // Check if either the planet pointer or the name pointer is NULL.
+    // If either is NULL, the comparison cannot proceed, so return false.
     if (planet == NULL || name == NULL) {
-        return false;
+        return false; // One or both inputs are invalid.
     }
-    if (strcmp(planet->name, name) == 0) {
-        return true;
-    }
-    return false;
-}
-bool compare_jerry(Jerry* jerry,char* id) {
-    if (jerry == NULL || jerry->ID == NULL || id == NULL) {
-        return false;
-    }
-    if (strcmp(jerry->ID, id) == 0) {
-        return true;
-    }
-    return false;
 
+    // Use strcmp to compare the name of the planet (planet->name)
+    // with the given name (name). strcmp returns 0 if the two strings are equal.
+    if (strcmp(planet->name, name) == 0) {
+        return true; // The names match, so return true.
+    }
+
+    // If the names do not match, return false.
+    return false;
 }
+
+bool compare_jerry(Jerry* jerry, char* id) {
+    // Check if the input 'jerry' pointer, its ID field, or the 'id' pointer is NULL.
+    // If any of these is NULL, the comparison cannot proceed, so return false.
+    if (jerry == NULL || jerry->ID == NULL || id == NULL) {
+        return false; // One or more inputs are invalid.
+    }
+
+    // Use strcmp to compare the ID of the 'jerry' object (jerry->ID)
+    // with the given ID (id). strcmp returns 0 if the two strings are equal.
+    if (strcmp(jerry->ID, id) == 0) {
+        return true; // The IDs match, so return true.
+    }
+
+    // If the IDs do not match, return false.
+    return false;
+}
+
+
+float get_value(Jerry* jerry, char* physical) {
+    // Check if the 'jerry' pointer, its ID, or the 'physical' parameter is NULL.
+    // If any of these is NULL, the function cannot proceed, so return 'failure'.
+    if (jerry == NULL || jerry->ID == NULL || physical == NULL) {
+        return failure; // Invalid input, return 'failure'.
+    }
+
+    // Iterate through the array of physical characteristics associated with the 'jerry' object.
+    // 'jerry->num_of_pyhshical' represents the number of physical characteristics.
+    for (int i = 0; i < jerry->num_of_pyhshical; i++) {
+        // Compare the name of the current physical characteristic with the given 'physical' name.
+        // If they match (strcmp returns 0), return the corresponding 'value'.
+        if (strcmp(jerry->his_physical[i]->name, physical) == 0) {
+            return jerry->his_physical[i]->value; // Return the value of the matched characteristic.
+        }
+    }
+
+    // If no matching physical characteristic is found, return 'failure'.
+    return failure;
+}
+
 

@@ -1,6 +1,7 @@
 Planets
 Earth,123.1,8392,99.2
 Gaia,983.223,8521,2312
+Gazorpazorp,85.10,555.50,312.00
 Pluto,3454.21,124.112,985.445
 Jerries
 23dF21,C-137,Earth,50

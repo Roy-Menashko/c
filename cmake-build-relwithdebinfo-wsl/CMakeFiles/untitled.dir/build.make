@@ -153,19 +153,19 @@ CMakeFiles/untitled.dir/MultiValueHashTable.c.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling C source to assembly CMakeFiles/untitled.dir/MultiValueHashTable.c.s"
 	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /mnt/c/Users/Avishur/CLionProjects/untitled/MultiValueHashTable.c -o CMakeFiles/untitled.dir/MultiValueHashTable.c.s
 
-CMakeFiles/untitled.dir/JerryBoree.c.o: CMakeFiles/untitled.dir/flags.make
-CMakeFiles/untitled.dir/JerryBoree.c.o: /mnt/c/Users/Avishur/CLionProjects/untitled/JerryBoree.c
-CMakeFiles/untitled.dir/JerryBoree.c.o: CMakeFiles/untitled.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/mnt/c/Users/Avishur/CLionProjects/untitled/cmake-build-relwithdebinfo-wsl/CMakeFiles --progress-num=$(CMAKE_PROGRESS_7) "Building C object CMakeFiles/untitled.dir/JerryBoree.c.o"
-	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/untitled.dir/JerryBoree.c.o -MF CMakeFiles/untitled.dir/JerryBoree.c.o.d -o CMakeFiles/untitled.dir/JerryBoree.c.o -c /mnt/c/Users/Avishur/CLionProjects/untitled/JerryBoree.c
+CMakeFiles/untitled.dir/JerryBoreeMain.c.o: CMakeFiles/untitled.dir/flags.make
+CMakeFiles/untitled.dir/JerryBoreeMain.c.o: /mnt/c/Users/Avishur/CLionProjects/untitled/JerryBoreeMain.c
+CMakeFiles/untitled.dir/JerryBoreeMain.c.o: CMakeFiles/untitled.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/mnt/c/Users/Avishur/CLionProjects/untitled/cmake-build-relwithdebinfo-wsl/CMakeFiles --progress-num=$(CMAKE_PROGRESS_7) "Building C object CMakeFiles/untitled.dir/JerryBoreeMain.c.o"
+	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/untitled.dir/JerryBoreeMain.c.o -MF CMakeFiles/untitled.dir/JerryBoreeMain.c.o.d -o CMakeFiles/untitled.dir/JerryBoreeMain.c.o -c /mnt/c/Users/Avishur/CLionProjects/untitled/JerryBoreeMain.c
 
-CMakeFiles/untitled.dir/JerryBoree.c.i: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing C source to CMakeFiles/untitled.dir/JerryBoree.c.i"
-	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /mnt/c/Users/Avishur/CLionProjects/untitled/JerryBoree.c > CMakeFiles/untitled.dir/JerryBoree.c.i
+CMakeFiles/untitled.dir/JerryBoreeMain.c.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing C source to CMakeFiles/untitled.dir/JerryBoreeMain.c.i"
+	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /mnt/c/Users/Avishur/CLionProjects/untitled/JerryBoreeMain.c > CMakeFiles/untitled.dir/JerryBoreeMain.c.i
 
-CMakeFiles/untitled.dir/JerryBoree.c.s: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling C source to assembly CMakeFiles/untitled.dir/JerryBoree.c.s"
-	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /mnt/c/Users/Avishur/CLionProjects/untitled/JerryBoree.c -o CMakeFiles/untitled.dir/JerryBoree.c.s
+CMakeFiles/untitled.dir/JerryBoreeMain.c.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling C source to assembly CMakeFiles/untitled.dir/JerryBoreeMain.c.s"
+	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /mnt/c/Users/Avishur/CLionProjects/untitled/JerryBoreeMain.c -o CMakeFiles/untitled.dir/JerryBoreeMain.c.s
 
 # Object files for target untitled
 untitled_OBJECTS = \
@@ -175,7 +175,7 @@ untitled_OBJECTS = \
 "CMakeFiles/untitled.dir/KeyValuePair.c.o" \
 "CMakeFiles/untitled.dir/HashTable.c.o" \
 "CMakeFiles/untitled.dir/MultiValueHashTable.c.o" \
-"CMakeFiles/untitled.dir/JerryBoree.c.o"
+"CMakeFiles/untitled.dir/JerryBoreeMain.c.o"
 
 # External object files for target untitled
 untitled_EXTERNAL_OBJECTS =
@@ -186,7 +186,7 @@ untitled: CMakeFiles/untitled.dir/LinkedList.c.o
 untitled: CMakeFiles/untitled.dir/KeyValuePair.c.o
 untitled: CMakeFiles/untitled.dir/HashTable.c.o
 untitled: CMakeFiles/untitled.dir/MultiValueHashTable.c.o
-untitled: CMakeFiles/untitled.dir/JerryBoree.c.o
+untitled: CMakeFiles/untitled.dir/JerryBoreeMain.c.o
 untitled: CMakeFiles/untitled.dir/build.make
 untitled: CMakeFiles/untitled.dir/link.txt
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --bold --progress-dir=/mnt/c/Users/Avishur/CLionProjects/untitled/cmake-build-relwithdebinfo-wsl/CMakeFiles --progress-num=$(CMAKE_PROGRESS_8) "Linking C executable untitled"

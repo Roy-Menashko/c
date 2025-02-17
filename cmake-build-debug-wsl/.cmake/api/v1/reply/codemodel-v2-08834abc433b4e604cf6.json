@@ -6,7 +6,7 @@
 			[
 				{
 					"build" : ".",
-					"jsonFile" : "directory-.-RelWithDebInfo-f5ebdc15457944623624.json",
+					"jsonFile" : "directory-.-Debug-f5ebdc15457944623624.json",
 					"minimumCMakeVersion" : 
 					{
 						"string" : "3.28.3"
@@ -19,7 +19,7 @@
 					]
 				}
 			],
-			"name" : "RelWithDebInfo",
+			"name" : "Debug",
 			"projects" : 
 			[
 				{
@@ -39,7 +39,7 @@
 				{
 					"directoryIndex" : 0,
 					"id" : "untitled::@6890427a1f51a3e7e1df",
-					"jsonFile" : "target-untitled-RelWithDebInfo-72f89aa1a1ab8a57f9e5.json",
+					"jsonFile" : "target-untitled-Debug-594db09b759e0c2d167a.json",
 					"name" : "untitled",
 					"projectIndex" : 0
 				}
@@ -49,7 +49,7 @@
 	"kind" : "codemodel",
 	"paths" : 
 	{
-		"build" : "/mnt/c/Users/Avishur/CLionProjects/untitled/cmake-build-relwithdebinfo-wsl",
+		"build" : "/mnt/c/Users/Avishur/CLionProjects/untitled/cmake-build-debug-wsl",
 		"source" : "/mnt/c/Users/Avishur/CLionProjects/untitled"
 	},
 	"version" : 

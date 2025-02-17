@@ -6,7 +6,7 @@
 			[
 				{
 					"build" : ".",
-					"jsonFile" : "directory-.-MinSizeRel-f5ebdc15457944623624.json",
+					"jsonFile" : "directory-.-RelWithDebInfo-f5ebdc15457944623624.json",
 					"minimumCMakeVersion" : 
 					{
 						"string" : "3.28.3"
@@ -19,7 +19,7 @@
 					]
 				}
 			],
-			"name" : "MinSizeRel",
+			"name" : "RelWithDebInfo",
 			"projects" : 
 			[
 				{
@@ -39,7 +39,7 @@
 				{
 					"directoryIndex" : 0,
 					"id" : "untitled::@6890427a1f51a3e7e1df",
-					"jsonFile" : "target-untitled-MinSizeRel-d0fe236039345bc00022.json",
+					"jsonFile" : "target-untitled-RelWithDebInfo-1f5dcc1c0b3e4ba44390.json",
 					"name" : "untitled",
 					"projectIndex" : 0
 				}
@@ -49,7 +49,7 @@
 	"kind" : "codemodel",
 	"paths" : 
 	{
-		"build" : "/mnt/c/Users/Avishur/CLionProjects/untitled/cmake-build-minsizerel-wsl",
+		"build" : "/mnt/c/Users/Avishur/CLionProjects/untitled/cmake-build-relwithdebinfo-wsl",
 		"source" : "/mnt/c/Users/Avishur/CLionProjects/untitled"
 	},
 	"version" : 

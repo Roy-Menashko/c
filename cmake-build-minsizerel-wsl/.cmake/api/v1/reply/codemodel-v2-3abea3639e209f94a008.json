@@ -6,7 +6,7 @@
 			[
 				{
 					"build" : ".",
-					"jsonFile" : "directory-.-Debug-f5ebdc15457944623624.json",
+					"jsonFile" : "directory-.-MinSizeRel-f5ebdc15457944623624.json",
 					"minimumCMakeVersion" : 
 					{
 						"string" : "3.28.3"
@@ -19,7 +19,7 @@
 					]
 				}
 			],
-			"name" : "Debug",
+			"name" : "MinSizeRel",
 			"projects" : 
 			[
 				{
@@ -39,7 +39,7 @@
 				{
 					"directoryIndex" : 0,
 					"id" : "untitled::@6890427a1f51a3e7e1df",
-					"jsonFile" : "target-untitled-Debug-54e7d01647f4bb12552c.json",
+					"jsonFile" : "target-untitled-MinSizeRel-262f3f44b7244c7bcd72.json",
 					"name" : "untitled",
 					"projectIndex" : 0
 				}
@@ -49,7 +49,7 @@
 	"kind" : "codemodel",
 	"paths" : 
 	{
-		"build" : "/mnt/c/Users/Avishur/CLionProjects/untitled/cmake-build-debug-wsl",
+		"build" : "/mnt/c/Users/Avishur/CLionProjects/untitled/cmake-build-minsizerel-wsl",
 		"source" : "/mnt/c/Users/Avishur/CLionProjects/untitled"
 	},
 	"version" : 

@@ -2,83 +2,94 @@
 #include <stdlib.h>
 #include <string.h>
 #include "MultiValueHashTable.h"
+#include "LinkedList.h"
+#include "KeyValuePair.h"
 
 
 
-/*
-   This multi-value hash table:
-     - Each bucket is a LinkedList of KeyValuePair.
-     - The KeyValuePair's "value" is itself a LinkedList of user-provided values.
-*/
 
-/*
-   We define a "dummy" free function for the sub-LinkedList pointer,
-   so destroyKeyValuePair won't double-free it.
-*/
-static status doNothingFree(Element e) {
-    (void)e;
-    return success; /* No-op */
+static status printListAsVoid(Element listPtr) {
+    // Check if the input pointer 'listPtr' is NULL.
+    // If it is NULL, return 'failure' to indicate an error.
+    if (!listPtr) return failure;
+
+    // Cast the generic 'Element' type (void*) to 'LinkedList'.
+    // This assumes that 'listPtr' is a valid pointer to a LinkedList object.
+    LinkedList list = (LinkedList)listPtr;
+
+    // Call 'displayList' to print the contents of the LinkedList.
+    // This function is expected to handle the actual display logic.
+    return displayList(list);
 }
 
-/*
-   When removing a KeyValuePair from the bucket,
-   we must FIRST destroy the sub-LinkedList of values,
-   THEN call destroyKeyValuePair.
-*/
-static status freePairWithValueList(Element e) {
-    KeyValuePair pair = (KeyValuePair)e;
 
-    /* Destroy the sub-list of user-values. */
-    destroyLinkedList((LinkedList)getValue(pair));
+static Element copyListAsVoid(Element listPtr) {
+    // Check if the input pointer 'listPtr' is NULL.
+    // If it is NULL, return NULL to indicate no copy can be made.
+    if (!listPtr) return NULL;
 
-    /* Now destroy the pair itself:
-       Because we gave the pair a "doNothingFree" as free_value,
-       destroyKeyValuePair() won't double-free the pointer. */
-    return destroyKeyValuePair(pair);
+    // Here, we are returning the same pointer without creating a new copy.
+    // This means no actual duplication of the list is performed.
+    return listPtr;
 }
 
-/* We compare KeyValuePairs by key. */
-static bool comparePairByKey(Element e1, Element e2) {
-    KeyValuePair p1 = (KeyValuePair)e1;
-    KeyValuePair p2 = (KeyValuePair)e2;
-    return isEqualKey(p1, getKey(p2));
+
+static status destroyListWrapper(Element listPtr) {
+    // Check if the input pointer 'listPtr' is NULL.
+    // If it is NULL, return 'failure' to indicate an invalid input.
+    if (!listPtr) return failure;
+
+    // Cast the generic 'Element' type (likely void*) to a 'LinkedList' type.
+    // This assumes that 'listPtr' is a valid pointer to a LinkedList.
+    // Call the 'destroyLinkedList' function to free all memory associated with the linked list.
+    return destroyLinkedList((LinkedList)listPtr);
 }
 
-/* If we ever want to display each KeyValuePair in a bucket, we print key + values. */
-static status printPairKeyThenValueList(Element e) {
-    KeyValuePair pair = (KeyValuePair)e;
-    displayKey(pair);
-    displayList((LinkedList)getValue(pair));
-    return success;
-}
 
 struct MultiHashTable {
-    int size;
+    hashTable hashTable;
+    // The main hash table that stores keys and their associated values.
+    // This is typically implemented as a standard hash table but designed to handle multiple values per key.
 
     CopyFunction copy_key;
+    // Function pointer to copy keys.
+    // Used when adding new keys to ensure the keys are properly duplicated.
+
     FreeFunction free_key;
+    // Function pointer to free keys.
+    // Ensures proper memory management by freeing dynamically allocated keys when no longer needed.
+
     PrintFunction print_key;
+    // Function pointer to print keys.
+    // Used for debugging or displaying the keys in the hash table.
 
     CopyFunction copy_value;
+    // Function pointer to copy values.
+    // Ensures values are duplicated correctly when adding new associations.
+
     FreeFunction free_value;
+    // Function pointer to free values.
+    // Handles the memory deallocation of values stored in the hash table.
+
     PrintFunction print_value;
+    // Function pointer to print values.
+    // Used for debugging or displaying the values associated with keys.
 
     EqualFunction equal_key;
+    // Function pointer to compare keys for equality.
+    // Determines if two keys are logically the same, which is crucial for hashing.
+
     EqualFunction equal_value;
+    // Function pointer to compare values for equality.
+    // Helps to manage duplicate values and ensures accurate value operations.
 
     TransformIntoNumberFunction transformIntoNumber;
-
-    LinkedList* buckets; /* An array of LinkedList of KeyValuePair. */
+    // Function pointer to hash a key into a numeric value.
+    // This numeric value is used to determine the bucket where the key-value pair is stored.
 };
 
-/* Simple helper to compute the bucket index. */
-static int getBucketIndex(hashTableProMax table, Element key) {
-    int hash = table->transformIntoNumber(key);
-    if (hash < 0) {
-        hash = -hash;
-    }
-    return hash % table->size;
-}
+
+
 
 hashTableProMax createHashTableProMax(
     CopyFunction copyKey,
@@ -92,19 +103,41 @@ hashTableProMax createHashTableProMax(
     TransformIntoNumberFunction transformIntoNumber,
     int hashNumber
 ) {
+    // Validate input parameters.
+    // Ensure none of the function pointers are NULL and that hashNumber is greater than 0.
     if (!copyKey || !freeKey || !printKey ||
         !copyValue || !freeValue || !printValue ||
         !equalKey || !equalValue || !transformIntoNumber ||
         hashNumber <= 0) {
-        return NULL;
+        return NULL; // Return NULL if validation fails.
     }
 
+    // Allocate memory for the MultiHashTable structure.
     hashTableProMax table = (hashTableProMax)malloc(sizeof(*table));
-    if (!table) {
+    if (!table) { // Check if memory allocation failed.
         return NULL;
     }
 
-    table->size = hashNumber;
+    // Create the internal hash table using the provided function pointers and hash number.
+    table->hashTable = createHashTable(
+        copyKey,            // Function to copy keys.
+        freeKey,            // Function to free keys.
+        printKey,           // Function to print keys.
+        copyListAsVoid,     // Function to copy values (as void pointers).
+        destroyListWrapper, // Function to destroy values (as void pointers).
+        printListAsVoid,    // Function to print values (as void pointers).
+        equalKey,           // Function to compare keys.
+        transformIntoNumber,// Function to hash keys.
+        hashNumber          // Number of hash buckets.
+    );
+
+    // Check if the internal hash table creation failed.
+    if (!table->hashTable) {
+        free(table); // Free the allocated memory for the table.
+        return NULL; // Return NULL to indicate failure.
+    }
+
+    // Initialize the fields of the MultiHashTable with the provided function pointers.
     table->copy_key = copyKey;
     table->free_key = freeKey;
     table->print_key = printKey;
@@ -115,212 +148,228 @@ hashTableProMax createHashTableProMax(
     table->equal_value = equalValue;
     table->transformIntoNumber = transformIntoNumber;
 
-    table->buckets = (LinkedList*)malloc(hashNumber * sizeof(LinkedList));
-    if (!table->buckets) {
-        free(table);
-        return NULL;
-    }
-
-    /* Each bucket is a LinkedList of KeyValuePair. */
-    for (int i = 0; i < hashNumber; i++) {
-        table->buckets[i] = createLinkedList(
-            freePairWithValueList,
-            comparePairByKey,
-            printPairKeyThenValueList
-        );
-        if (!table->buckets[i]) {
-            /* Clean up previously allocated buckets. */
-            for (int j = 0; j < i; j++) {
-                destroyLinkedList(table->buckets[j]);
-            }
-            free(table->buckets);
-            free(table);
-            return NULL;
-        }
-    }
+    // Return the pointer to the newly created MultiHashTable.
     return table;
 }
 
+
 status destroyHashTableProMax(hashTableProMax table) {
+    // Check if the input 'table' pointer is NULL.
+    // If it is NULL, there is nothing to destroy, so return 'failure'.
     if (!table) {
-        return failure;
+        return failure; // Invalid input, destruction cannot proceed.
     }
-    /* Destroy each bucket's LinkedList, which calls freePairWithValueList. */
-    for (int i = 0; i < table->size; i++) {
-        destroyLinkedList(table->buckets[i]);
-    }
-    free(table->buckets);
+
+    // Destroy the internal hash table.
+    // This operation is expected to handle:
+    // - Destroying each bucket's linked list.
+    // - Calling the appropriate cleanup function (e.g., freePairWithValueList)
+    //   for each key-value pair stored in the hash table.
+    destroyHashTable(table->hashTable);
+
+    // Free the memory allocated for the MultiHashTable structure itself.
     free(table);
+
+    // Return 'success' to indicate the MultiHashTable was successfully destroyed.
     return success;
 }
 
-/* Returns the LinkedList of user-values for 'key', or NULL if not found. */
+
+/*
+ * Returns the LinkedList of user-values associated with the given 'key',
+ * or NULL if the key is not found in the hash table.
+ */
 Element lookupInHashTableProMax(hashTableProMax table, Element key) {
+    // Check if the table or key is NULL.
+    // If either is NULL, the lookup cannot proceed, so return NULL.
     if (!table || !key) {
-        return NULL;
+        return NULL; // Invalid input.
     }
-    int index = getBucketIndex(table, key);
-    LinkedList bucket = table->buckets[index];
 
-    Element nodeElem = getFirstElement(bucket);
-    while (nodeElem) {
-        KeyValuePair pair = (KeyValuePair)nodeElem;
-        if (table->equal_key(getKey(pair), key)) {
-            return getValue(pair); /* the sub-LinkedList of values */
-        }
-        nodeElem = getNextElement(bucket, nodeElem);
-    }
-    return NULL;
+    // Use the internal hash table's lookup function to find the LinkedList
+    // associated with the given key. If the key is not found, this will return NULL.
+    LinkedList list = lookupInHashTable(table->hashTable, key);
+
+    // Return the LinkedList of values associated with the key.
+    // If the key does not exist in the table, NULL is returned.
+    return list;
 }
 
+
 /*
-   addToHashTableProMax:
-   - If key not found, create a new KeyValuePair:
-       * keyCopy
-       * new LinkedList for the values
-       * pass doNothingFree as 'free_value' to KeyValuePair so we don't double-free the sub-list
-     Then append the new value to that list.
-   - If key found, just append the new value to the existing sub-list.
-*/
+ * addToHashTableProMax:
+ * Adds a value to the MultiHashTable for the given key.
+ * - If the key does not exist, creates a new KeyValuePair:
+ *     * Copies the key (keyCopy).
+ *     * Creates a new LinkedList to hold values.
+ *     * Uses doNothingFree as 'free_value' for the LinkedList to avoid double-free issues.
+ *     * Adds the new value to the list.
+ * - If the key exists, appends the new value to the existing LinkedList.
+ *
+ * Parameters:
+ * - table: Pointer to the MultiHashTable.
+ * - key: The key to associate the value with.
+ * - value: The value to add.
+ *
+ * Returns:
+ * - success: If the value is added successfully.
+ * - failure: If an error occurs (e.g., memory allocation failure).
+ */
 status addToHashTableProMax(hashTableProMax table, Element key, Element value) {
+    // Validate input parameters.
+    // Ensure that the table, key, and value are not NULL.
     if (!table || !key || !value) {
-        return failure;
+        return failure; // Invalid input.
     }
 
-    /* Does key exist? */
-    LinkedList existingValList = (LinkedList)lookupInHashTableProMax(table, key);
-    if (!existingValList) {
-        /* Need a new KeyValuePair: (keyCopy) -> (newValList). */
-        Element keyCopy = table->copy_key(key);
-        if (!keyCopy) {
-            return failure;
-        }
-        LinkedList newValList = createLinkedList(
-            table->free_value,
-            table->equal_value,
-            table->print_value
-        );
-        if (!newValList) {
-            table->free_key(keyCopy);
+    // Check if the key already exists in the hash table.
+    LinkedList existingValList = (LinkedList)lookupInHashTable(table->hashTable, key);
+
+    // If the key exists, append the new value to the associated LinkedList.
+    if (existingValList) {
+        // Create a copy of the value using the provided copy function.
+        Element valueCopy = table->copy_value(value);
+        if (!valueCopy) { // Check for memory allocation failure.
             return failure;
         }
 
-        /* Create a KeyValuePair that won't free 'newValList' again. */
-        KeyValuePair pair = createKeyValuePair(
-            keyCopy,
-            newValList,
-            table->free_key,
-            doNothingFree,  /* <--- crucial: skip freeing the sub-list pointer */
-            table->print_key,
-            table->print_value,
-            table->equal_key
-        );
-        if (!pair) {
-            table->free_key(keyCopy);
-            destroyLinkedList(newValList);
+        // Append the copied value to the existing LinkedList.
+        if (appendNode(existingValList, valueCopy) == failure) {
+            table->free_value(valueCopy); // Free the value copy on failure.
             return failure;
         }
 
-        int bucketIndex = getBucketIndex(table, key);
-        if (appendNode(table->buckets[bucketIndex], pair) == failure) {
-            destroyKeyValuePair(pair); /* which calls table->free_key on keyCopy, doNothingFree on valList pointer */
-            return failure;
-        }
-
-        /* Also insert the first 'value' into the sub-list. */
-        Element valCopy = table->copy_value(value);
-        if (!valCopy) {
-            /* remove the entire pair from the bucket. */
-            deleteNode(table->buckets[bucketIndex], pair);
-            destroyKeyValuePair(pair);
-            return failure;
-        }
-        if (appendNode(newValList, valCopy) == failure) {
-            table->free_value(valCopy);
-            deleteNode(table->buckets[bucketIndex], pair);
-            destroyKeyValuePair(pair);
-            return failure;
-        }
-    } else {
-        /* Key found -> just append the new value to existingValList. */
-        Element valCopy = table->copy_value(value);
-        if (!valCopy) {
-            return failure;
-        }
-        if (appendNode(existingValList, valCopy) == failure) {
-            table->free_value(valCopy);
-            return failure;
-        }
+        return success; // Value added successfully.
     }
-    return success;
+    // If the key does not exist, create a new LinkedList and add the value.
+    else {
+        // Create a new LinkedList to hold the values associated with the key.
+        existingValList = createLinkedList(table->free_value, table->equal_value, table->print_value);
+        if (!existingValList) { // Check for memory allocation failure.
+            return failure;
+        }
+
+        // Create a copy of the value to add to the LinkedList.
+        Element valueCopy = table->copy_value(value);
+        if (!valueCopy) { // Check for memory allocation failure.
+            destroyLinkedList(existingValList); // Free the LinkedList on failure.
+            return failure;
+        }
+
+        // Append the copied value to the new LinkedList.
+        if (appendNode(existingValList, valueCopy) == failure) {
+            table->free_value(valueCopy); // Free the value copy on failure.
+            destroyLinkedList(existingValList); // Free the LinkedList on failure.
+            return failure;
+        }
+
+        // Add the new KeyValuePair (key and LinkedList) to the hash table.
+        if (addToHashTable(table->hashTable, key, existingValList) == failure) {
+            destroyLinkedList(existingValList); // Free the LinkedList on failure.
+            return failure;
+        }
+
+        return success; // Key-value pair added successfully.
+    }
 }
 
+
 /*
-   removeFromHashTableProMax:
-   - If value == NULL, remove entire KeyValuePair (i.e. remove the key).
-   - Else remove just that single value. If the sub-list becomes empty, remove the key entirely.
-*/
+ * removeFromHashTableProMax:
+ * Removes a key-value pair or a single value from the MultiHashTable.
+ * - If `value == NULL`, the entire KeyValuePair (key and associated values) is removed.
+ * - If `value != NULL`, the specific value is removed from the LinkedList associated with the key.
+ *   If the LinkedList becomes empty after the removal, the key is removed entirely.
+ *
+ * Parameters:
+ * - table: Pointer to the MultiHashTable.
+ * - key: The key whose associated value(s) will be removed.
+ * - value: The specific value to remove, or NULL to remove the entire KeyValuePair.
+ *
+ * Returns:
+ * - success: If the key or value was removed successfully.
+ * - failure: If an error occurs (e.g., invalid input, key not found, etc.).
+ */
 status removeFromHashTableProMax(hashTableProMax table, Element key, Element value) {
+    // Validate input parameters.
+    // Ensure that the table and key are not NULL.
     if (!table || !key) {
+        return failure; // Invalid input.
+    }
+
+    // Lookup the LinkedList associated with the given key in the hash table.
+    LinkedList existingValList = (LinkedList)lookupInHashTable(table->hashTable, key);
+
+    // If the key exists in the hash table:
+    if (existingValList) {
+        // If a specific value is provided, attempt to remove it from the LinkedList.
+        if (value) {
+            // Remove the value from the LinkedList.
+            if (deleteNode(existingValList, value) == failure) {
+                return failure; // Failed to remove the value.
+            }
+
+            // If the LinkedList becomes empty after the removal, remove the key entirely.
+            if (getLength(existingValList) == 0) {
+                // Remove the key from the hash table.
+                if (removeFromHashTable(table->hashTable, key) == failure) {
+                    return failure; // Failed to remove the key.
+                }
+            }
+        }
+        // If value == NULL, remove the entire KeyValuePair (key and LinkedList).
+        else {
+            if (removeFromHashTable(table->hashTable, key) == failure) {
+                return failure; // Failed to remove the KeyValuePair.
+            }
+        }
+    }
+    // If the key does not exist in the hash table, return failure.
+    else {
         return failure;
     }
-    int index = getBucketIndex(table, key);
-    LinkedList bucket = table->buckets[index];
 
-    /* Find the KeyValuePair in the bucket. */
-    Element nodeElem = getFirstElement(bucket);
-    KeyValuePair foundPair = NULL;
-    while (nodeElem) {
-        KeyValuePair p = (KeyValuePair)nodeElem;
-        if (table->equal_key(getKey(p), key)) {
-            foundPair = p;
-            break;
-        }
-        nodeElem = getNextElement(bucket, nodeElem);
-    }
-    if (!foundPair) {
-        return failure; /* key not found */
-    }
-
-    if (!value) {
-        /* Remove the entire key (which calls freePairWithValueList on foundPair). */
-        if (deleteNode(bucket, foundPair) == failure) {
-            return failure;
-        }
-        return success;
-    }
-
-    /* Otherwise, remove a single value from the sub-list. */
-    LinkedList valList = (LinkedList)getValue(foundPair);
-    if (!valList) {
-        return failure;
-    }
-    if (deleteNode(valList, value) == failure) {
-        return failure; /* that value wasn't in the list */
-    }
-    /* If the sub-list is now empty, remove the entire key. */
-    if (getLength(valList) == 0) {
-        if (deleteNode(bucket, foundPair) == failure) {
-            return failure;
-        }
-    }
+    // Return success if the operation completes without errors.
     return success;
 }
 
+
 /*
-   displayHashTableProMaxElementsByKey:
-   - We find the sub-list of values for 'key'.
-   - Print the key, then print the sub-list of values.
-*/
+ * displayHashTableProMaxElementsByKey:
+ * Displays the key and its associated list of values in the MultiHashTable.
+ * - First, finds the sub-list of values associated with the given key.
+ * - Prints the key, followed by the values in the sub-list.
+ *
+ * Parameters:
+ * - table: Pointer to the MultiHashTable.
+ * - key: The key whose associated values will be displayed.
+ *
+ * Returns:
+ * - success: If the key and its values were successfully displayed.
+ * - failure: If an error occurs (e.g., invalid input, key not found).
+ */
 status displayHashTableProMaxElementsByKey(hashTableProMax table, Element key) {
+    // Validate input parameters.
+    // Ensure that the table and key are not NULL.
     if (!table || !key) {
-        return failure;
+        return failure; // Invalid input.
     }
+
+    // Retrieve the LinkedList of values associated with the given key.
     LinkedList valList = (LinkedList)lookupInHashTableProMax(table, key);
+
+    // If the key is not found in the hash table, return failure.
     if (!valList) {
-        return failure; /* key not found */
+        return failure; // Key not found.
     }
+
+    // Print the key using the provided print_key function.
     table->print_key(key);
+    printf(" :\n"); // Print a separator for better readability.
+
+    // Display the list of values associated with the key.
     displayList(valList);
+
+    // Return success after displaying the key and its values.
     return success;
 }
